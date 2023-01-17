@@ -13,15 +13,12 @@ namespace Application.Activities
         {
             private readonly DataContext dataContext;
 
-            public Handler(DataContext dataContext)
-            {
-                this.dataContext = dataContext;
-            }
+            public Handler(DataContext dataContext) => this.dataContext = dataContext;
 
             public async Task<List<Activity>> Handle(Query request, CancellationToken cancellationToken)
             {
                 return await this.dataContext.Activities.ToListAsync(cancellationToken);
             }
-        } 
-    } 
+        }
+    }
 }
