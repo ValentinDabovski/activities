@@ -11,7 +11,7 @@ namespace Application.Activities
             public Guid Id { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, Activity>
+        private class Handler : IRequestHandler<Query, Activity>
         {
             private readonly DataContext dataContext;
 
@@ -19,7 +19,7 @@ namespace Application.Activities
 
             public async Task<Activity> Handle(Query request, CancellationToken cancellationToken)
             {
-                return await this.dataContext.Activities.FindAsync(request.Id);
+                return await this.dataContext.Activities.FindAsync(request.Id, cancellationToken);
             }
         }
     }

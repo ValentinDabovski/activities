@@ -9,7 +9,7 @@ namespace Application.Activities
     {
         public class Query : IRequest<List<Activity>> { }
 
-        public class Handler : IRequestHandler<Query, List<Activity>>
+        private class Handler : IRequestHandler<Query, List<Activity>>
         {
             private readonly DataContext dataContext;
 
