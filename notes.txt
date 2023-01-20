@@ -3,3 +3,5 @@ TODOs after the initial project is done
 1: Implement proper domain
 2: Implement CQRS with read db and write db
 3: Enable nullable
+4: add docker containers
+5: add docker compose
