@@ -40,8 +40,8 @@ export default function ActivityForm({ activity: selectedActivity, closeForm, cr
                 <Form.Input placeholder='Date' onChange={handleInputChange} value={activity.date} name='date' />
                 <Form.Input placeholder='City' onChange={handleInputChange} value={activity.city} name='city' />
                 <Form.Input placeholder='Venue' onChange={handleInputChange} value={activity.venue} name='venue' />
-                <Button floated="right" positive type="submit" content='Submit' />
-                <Button onClick={() => closeForm()} floated="right" type="button" content='Cancel ' />
+                <Button basic floated="right" positive type="submit" content='Submit' />
+                <Button onClick={() => closeForm()} basic floated="right" type="button" content='Cancel ' />
             </Form>
         </Segment>
     )
