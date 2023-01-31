@@ -2,7 +2,7 @@ using Domain.Common;
 
 namespace Domain
 {
-    public class Activity : Entity<Guid>
+    public class Activity
     {
         public Activity(string title, string description, DateTime date, Address address, Category category)
         {
@@ -13,7 +13,7 @@ namespace Domain
             this.Category = category;
             this.Address = address;
         }
-        private Activity() {}
+        private Activity() { }
         public Guid Id { get; private set; }
         public string Title { get; private set; }
         public DateTime Date { get; private set; }
