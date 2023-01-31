@@ -1,32 +1,38 @@
+using Domain.Common;
+
 namespace Domain
 {
     public class Address : ValueObject
     {
-        public Address(string street, string city, string state, string country, string zipcode)
+        public Address(string street, string city, string state, string country, string zipcode, string venue)
         {
-            Street = street;
-            City = city;
-            State = state;
-            Country = country;
-            ZipCode = zipcode;
+            this.Id = Guid.NewGuid();
+            this.Street = street;
+            this.City = city;
+            this.State = state;
+            this.Country = country;
+            this.ZipCode = zipcode;
+            this.Venue = venue;
         }
 
-        public Address() { }
-
-        public String Street { get; private set; }
-        public String City { get; private set; }
-        public String State { get; private set; }
-        public String Country { get; private set; }
-        public String ZipCode { get; private set; }
+        private Address() { }
+        public Guid Id { get; private set; }
+        public string Street { get; private set; }
+        public string City { get; private set; }
+        public string State { get; private set; }
+        public string Country { get; private set; }
+        public string ZipCode { get; private set; }
+        public string Venue { get; set; }
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
             // Using a yield return statement to return each element one at a time
-            yield return Street;
-            yield return City;
-            yield return State;
-            yield return Country;
-            yield return ZipCode;
+            yield return this.Id;
+            yield return this.Street;
+            yield return this.City;
+            yield return this.State;
+            yield return this.Country;
+            yield return this.ZipCode;
         }
     }
 }

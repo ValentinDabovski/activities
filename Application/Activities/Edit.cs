@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using Domain;
 using MediatR;
@@ -14,6 +10,8 @@ namespace Application.Activities
         public class Command : IRequest
         {
             public Activity Activity { get; set; }
+
+            public Guid AcivityId { get; set; }
         }
 
         private class Handler : IRequestHandler<Command>
@@ -30,7 +28,7 @@ namespace Application.Activities
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var activity = await this.dataContext.Activities.FindAsync(request.Activity.Id, cancellationToken);
+                var activity = await this.dataContext.Activities.FindAsync(request.AcivityId, cancellationToken);
 
                 this.mapper.Map(request.Activity, activity);
 
