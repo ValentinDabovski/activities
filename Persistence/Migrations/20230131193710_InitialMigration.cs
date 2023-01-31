@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,12 +16,16 @@ namespace Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Title = table.Column<string>(type: "TEXT", nullable: true),
                     Date = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
-                    Category = table.Column<string>(type: "TEXT", nullable: true),
-                    City = table.Column<string>(type: "TEXT", nullable: true),
-                    Venue = table.Column<string>(type: "TEXT", nullable: true)
+                    Category = table.Column<int>(type: "INTEGER", nullable: false),
+                    AddressStreet = table.Column<string>(name: "Address_Street", type: "TEXT", nullable: true),
+                    AddressCity = table.Column<string>(name: "Address_City", type: "TEXT", nullable: true),
+                    AddressState = table.Column<string>(name: "Address_State", type: "TEXT", nullable: true),
+                    AddressCountry = table.Column<string>(name: "Address_Country", type: "TEXT", nullable: true),
+                    AddressZipCode = table.Column<string>(name: "Address_ZipCode", type: "TEXT", nullable: true),
+                    AddressVenue = table.Column<string>(name: "Address_Venue", type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

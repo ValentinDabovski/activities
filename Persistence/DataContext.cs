@@ -10,5 +10,19 @@ namespace Persistence
         }
 
         public DbSet<Activity> Activities { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<Activity>()
+            .OwnsOne(activity => activity.Address,
+                address =>
+                {
+                    address.WithOwner();
+                    address.Property(a => a.City).IsRequired();
+                }
+            );
+
+            base.OnModelCreating(builder);
+        }
     }
 }
