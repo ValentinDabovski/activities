@@ -28,7 +28,7 @@ export default function ActivityList({ activities, selectActivity, deleteActivit
                             <Item.Meta>{activity.date.toString()}</Item.Meta>
                             <Item.Description>
                                 <div>{activity.description}</div>
-                                <div>{activity.city}, {activity.venue}</div>
+                                <div>{activity.address.city}, {activity.address.venue}</div>
                             </Item.Description>
                             <Item.Extra>
                                 <Button onClick={() => selectActivity(activity.id)} floated="right" basic color='grey' content="View" />
@@ -42,7 +42,7 @@ export default function ActivityList({ activities, selectActivity, deleteActivit
                                 />
 
 
-                                <Label basic content={activity.category} />
+                                <Label basic content={activity.category.name} />
                             </Item.Extra>
                         </Item.Content>
                     </Item>
