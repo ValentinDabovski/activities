@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,8 @@ namespace Persistence.Migrations
                     Title = table.Column<string>(type: "TEXT", nullable: true),
                     Date = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
-                    Category = table.Column<int>(type: "INTEGER", nullable: false),
+                    CategoryName = table.Column<string>(name: "Category_Name", type: "TEXT", nullable: true),
+                    CategoryDescription = table.Column<string>(name: "Category_Description", type: "TEXT", nullable: true),
                     AddressStreet = table.Column<string>(name: "Address_Street", type: "TEXT", nullable: true),
                     AddressCity = table.Column<string>(name: "Address_City", type: "TEXT", nullable: true),
                     AddressState = table.Column<string>(name: "Address_State", type: "TEXT", nullable: true),

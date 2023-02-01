@@ -2,10 +2,18 @@ using Domain.Common;
 
 namespace Domain
 {
-    public enum Category
+    public record Category
     {
-        Culture,
-        Drinks,
-        Film
+        public Category(string name, string description)
+        {
+            this.Name = name;
+            this.Description = description;
+        }
+
+        private Category() { }
+
+        public string Name { get; private set; }
+
+        public string Description { get; private set; }
     }
 }

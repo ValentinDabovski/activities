@@ -22,6 +22,15 @@ namespace Persistence
                 }
             );
 
+            builder.Entity<Activity>()
+            .OwnsOne(activity => activity.Category,
+                category =>
+                {
+                    category.WithOwner();
+                    category.Property(c => c.Name).IsRequired();
+                }
+            );
+
             base.OnModelCreating(builder);
         }
     }

@@ -23,9 +23,6 @@ namespace Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Category")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
@@ -74,7 +71,29 @@ namespace Persistence.Migrations
                                 .HasForeignKey("ActivityId");
                         });
 
+                    b.OwnsOne("Domain.Category", "Category", b1 =>
+                        {
+                            b1.Property<Guid>("ActivityId")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<string>("Description")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("ActivityId");
+
+                            b1.ToTable("Activities");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ActivityId");
+                        });
+
                     b.Navigation("Address");
+
+                    b.Navigation("Category");
                 });
 #pragma warning restore 612, 618
         }

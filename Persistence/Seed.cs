@@ -20,7 +20,7 @@ namespace Persistence
                                                     country: "Bulgaria",
                                                     zipcode: "9282",
                                                     venue: "Chlagoteka 34"),
-                                category: Category.Drinks)
+                                category: new Category(name: "Drinks", description: ""))
 
             };
 
