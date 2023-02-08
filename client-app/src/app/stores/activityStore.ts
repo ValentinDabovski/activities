@@ -81,7 +81,23 @@ export default class ActivityStore {
                 this.editMode = false
                 this.loading = false
             })
-        } catch (error) { 
+        } catch (error) {
+            console.log(error)
+            runInAction(() => {
+                this.loading = false
+            })
+        }
+    }
+
+    deleteActivity = async (id: string) => {
+        try {
+            await agent.Acitvities.delete(id)
+            runInAction(() => {
+                this.activities = [...this.activities.filter(a => a.id !== id)]
+                if (this.selectedActivity?.id === id) this.cancelSelectedActivity()
+                this.loading = false
+            })
+        } catch (error) {
             console.log(error)
             runInAction(() => {
                 this.loading = false

@@ -1,6 +1,5 @@
 import React, { ChangeEvent, useState } from "react";
 import { Button, Form, Segment } from "semantic-ui-react";
-import { Activity } from "../../../app/models/activity";
 import { useStore } from "../../../app/stores/store";
 import { observer } from "mobx-react-lite";
 
@@ -32,7 +31,7 @@ export default observer(function ActivityForm() {
     const [activity, setActivity] = useState(initialState)
 
     function handleSubmit() {
-        activity.id ? editActivity(activity) : createActivity(activity )
+        activity.id ? editActivity(activity) : createActivity(activity)
     }
 
     function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -42,13 +41,11 @@ export default observer(function ActivityForm() {
 
     function handAddressInputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         const { name, value } = event.target
-        console.log(event.target)
         setActivity({ ...activity, address: { ...activity.address, [name]: value } })
     }
 
     function handCategoryInputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         const { name, value } = event.target
-        console.log(event.target)
         setActivity({ ...activity, category: { ...activity.category, [name]: value } })
     }
 
