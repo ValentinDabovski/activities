@@ -16,30 +16,12 @@ function App() {
 
   const [activities, setActivities] = useState<Activity[]>([])
   const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined)
-  const [editMode, setEditMode] = useState(false) 
+  const [editMode, setEditMode] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     activityStore.loadActivities()
   }, [activityStore])
-
-
-  function handleSelectActivity(id: string) {
-    setSelectedActivity(activities.find(x => x.id === id))
-  }
-
-  function handleCancelSelectActivity() {
-    setSelectedActivity(undefined)
-  }
-
-  function handleFormOpen(id?: string) {
-    id ? handleSelectActivity(id) : handleCancelSelectActivity()
-    setEditMode(true)
-  }
-
-  function handleFromClose() {
-    setEditMode(false)
-  }
 
   function handleCreateOrEditActivity(activity: Activity) {
     setSubmitting(true)
@@ -73,16 +55,10 @@ function App() {
 
   return (
     <>
-      <NavBar openForm={handleFormOpen} />
+      <NavBar />
       <Container style={{ marginTop: '7em' }}>
         <ActivityDashboard
-          selectedActivity={selectedActivity }
-          selectActivity={handleSelectActivity}
-          cancelSelectActivity={handleCancelSelectActivity}
           activities={activityStore.activities}
-          editMode={editMode}
-          openForm={handleFormOpen}
-          closeForm={handleFromClose}
           createOrEdit={handleCreateOrEditActivity}
           deleteActivity={handleDeleteActivity}
           submitting={submitting}
