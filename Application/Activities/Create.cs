@@ -17,7 +17,14 @@ namespace Application.Activities
             public Handler(DataContext dataContext) => this.dataContext = dataContext;
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                await this.dataContext.Activities.AddAsync(request.Activity, cancellationToken);
+                var activity = new Activity(
+                    title: request.Activity.Title,
+                    description: request.Activity.Description,
+                    date: request.Activity.Date,
+                    address: request.Activity.Address,
+                    category: request.Activity.Category);
+
+                await this.dataContext.Activities.AddAsync(activity, cancellationToken);
 
                 await this.dataContext.SaveChangesAsync(cancellationToken);
 

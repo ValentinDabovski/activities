@@ -1,4 +1,3 @@
-using AutoMapper;
 using Domain;
 using MediatR;
 using Persistence;
@@ -17,11 +16,9 @@ namespace Application.Activities
         private class Handler : IRequestHandler<Command>
         {
             private readonly DataContext dataContext;
-            private readonly IMapper mapper;
 
-            public Handler(DataContext dataContext, IMapper mapper)
+            public Handler(DataContext dataContext)
             {
-                this.mapper = mapper;
                 this.dataContext = dataContext;
             }
 
@@ -30,7 +27,11 @@ namespace Application.Activities
             {
                 var activity = await this.dataContext.Activities.FindAsync(request.AcivityId, cancellationToken);
 
-                this.mapper.Map(request.Activity, activity);
+                activity.UpdateTitle(request.Activity.Title);
+                activity.UpdateDescription(request.Activity.Description);
+                activity.UpdateDate(request.Activity.Date);
+                activity.UpdateCategory(request.Activity.Category);
+                activity.UpdateAddress(request.Activity.Address);
 
                 await dataContext.SaveChangesAsync(cancellationToken);
 
