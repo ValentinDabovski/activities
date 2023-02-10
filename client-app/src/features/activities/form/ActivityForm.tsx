@@ -7,7 +7,7 @@ import { observer } from "mobx-react-lite";
 export default observer(function ActivityForm() {
 
     const { activityStore } = useStore()
-    const { selectedActivity, closeForm, loading, createActivity, editActivity } = activityStore
+    const { selectedActivity, loading, createActivity, editActivity } = activityStore
 
     const initialState = selectedActivity ?? {
         id: '',
@@ -59,7 +59,7 @@ export default observer(function ActivityForm() {
                 <Form.Input placeholder='City' onChange={handAddressInputChange} value={activity.address.city} name='city' />
                 <Form.Input placeholder='Venue' onChange={handAddressInputChange} value={activity.address.venue} name='venue' />
                 <Button loading={loading} basic floated="right" positive type="submit" content='Submit' />
-                <Button onClick={() => closeForm()} basic floated="right" type="button" content='Cancel ' />
+                <Button basic floated="right" type="button" content='Cancel ' />
             </Form>
         </Segment>
     )

@@ -24,8 +24,7 @@ export default class ActivityStore {
         try {
             const activities = await agent.Acitvities.list();
             activities.forEach(a => {
-                a.date = a.date.split('T')[0]
-                this.activityRegistry.set(a.id, a)
+                this.setActivity(a)
             })
             this.setLoadingInitial(false)
 
@@ -35,30 +34,38 @@ export default class ActivityStore {
         }
     }
 
+    loadActivity = async (id: string) => {
+        let acitvity = this.getActivity(id)
+        if (acitvity) this.selectedActivity = acitvity
+        else {
+            try {
+                acitvity = await agent.Acitvities.details(id)
+                this.setActivity(acitvity)
+                this.selectedActivity = acitvity
+                this.setLoadingInitial(false)
+            } catch (error) {
+                console.log(error)
+                this.setLoadingInitial(false)
+            }
+        }
+
+    }
+
+    private setActivity = (activity: Activity) => {
+        activity.date = activity.date.split('T')[0]
+        this.activityRegistry.set(activity.id, activity)
+    }
+
+    private getActivity = (id: string) => {
+        return this.activityRegistry.get(id)
+    }
+
     setLoadingInitial = (state: boolean) => {
         this.loadinInitial = state
     }
 
-    selectActivity = (id: string) => {
-        this.selectedActivity = this.activityRegistry.get(id)
-    }
-
-    cancelSelectedActivity = () => {
-        this.selectedActivity = undefined
-    }
-
-    openForm = (id?: string) => {
-        id ? this.selectActivity(id) : this.cancelSelectedActivity()
-        this.editMode = true
-    }
-
-    closeForm = () => {
-        this.editMode = false
-    }
-
     createActivity = async (activity: Activity) => {
         this.loading = true
-
         try {
             await agent.Acitvities.create(activity)
             runInAction(() => {
@@ -69,15 +76,12 @@ export default class ActivityStore {
             })
         } catch (error) {
             console.log(error)
-            runInAction(() => {
-                this.loading = false
-            })
+            this.setLoadingInitial(false)
         }
     }
 
     editActivity = async (activity: Activity) => {
         this.loading = true
-
         try {
             await agent.Acitvities.update(activity);
             runInAction(() => {
@@ -88,25 +92,21 @@ export default class ActivityStore {
             })
         } catch (error) {
             console.log(error)
-            runInAction(() => {
-                this.loading = false
-            })
+            this.setLoadingInitial(false)
         }
     }
 
     deleteActivity = async (id: string) => {
+        this.loading = true
         try {
             await agent.Acitvities.delete(id)
             runInAction(() => {
                 this.activityRegistry.delete(id)
-                if (this.selectedActivity?.id === id) this.cancelSelectedActivity()
                 this.loading = false
             })
         } catch (error) {
             console.log(error)
-            runInAction(() => {
-                this.loading = false
-            })
+            this.setLoadingInitial(false)
         }
     }
 } 
