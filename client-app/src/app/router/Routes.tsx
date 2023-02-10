@@ -7,10 +7,13 @@ import ActivityDetails from "../../features/activities/details/ActivityDetails";
 
 export const routes: RouteObject[] = [
     {
+        path: '',
+        element: <HomePage />
+    },
+    {
         path: '/',
         element: <App />,
         children: [
-            { path: '', element: <HomePage /> },
             {
                 path: '/activities', element: <App />, children: [
                     { path: 'all', element: <ActivityDashboard /> },
