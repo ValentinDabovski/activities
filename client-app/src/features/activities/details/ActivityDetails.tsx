@@ -3,7 +3,7 @@ import { Button, Card, Image } from "semantic-ui-react";
 import { useStore } from "../../../app/stores/store";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { observer } from "mobx-react-lite";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export default observer(function ActivityDetails() {
 
@@ -13,7 +13,7 @@ export default observer(function ActivityDetails() {
 
     useEffect(() => {
         if (id) loadActivity(id)
-    }, [id, loadActivity]) 
+    }, [id, loadActivity])
 
     if (loadinInitial || !activity) return <LoadingComponent />
     return (
@@ -30,8 +30,8 @@ export default observer(function ActivityDetails() {
             </Card.Content>
             <Card.Content extra>
                 <Button.Group>
-                    <Button basic content='Edit' />
-                    <Button basic content='Cancel' />
+                    <Button as={Link} to={`/activities/edit/${activity.id}`} basic content='Edit' />
+                    <Button as={Link} to='/activities/all' basic content='Cancel' />
                 </Button.Group>
             </Card.Content>
         </Card>
