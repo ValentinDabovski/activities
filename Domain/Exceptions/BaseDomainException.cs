@@ -1,14 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Domain.Exceptions
 {
     public class BaseDomainException : Exception
     {
-        public BaseDomainException(string message) : base(message)
+        private string error;
+
+        public string Error
         {
+            get => this.error ?? base.Message;
+            set => this.error = value;
         }
     }
 }

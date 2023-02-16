@@ -1,5 +1,5 @@
 using Application.Activities;
-using Domain;
+using Application.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -7,27 +7,27 @@ namespace API.Controllers
     public class ActivitiesController : BaseApiController
     {
         [HttpGet]
-        public async Task<ActionResult<List<Activity>>> Get()
+        public async Task<ActionResult<List<ActivityDto>>> Get()
         {
             return await Mediator.Send(new List.Query());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Activity>> GetById(Guid id)
+        public async Task<ActionResult<ActivityDto>> GetById(Guid id)
         {
             return await Mediator.Send(new Details.Query { Id = id });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Activity activity)
+        public async Task<IActionResult> Create(ActivityDto activityDto)
         {
-            return Ok(await Mediator.Send(new Create.Command { Activity = activity }));
+            return Ok(await Mediator.Send(new Create.Command { ActivityDto = activityDto }));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(Guid id, Activity activity)
+        public async Task<IActionResult> Edit(Guid id, ActivityDto activityDto)
         {
-            return Ok(await Mediator.Send(new Edit.Command { Activity = activity, AcivityId = id }));
+            return Ok(await Mediator.Send(new Edit.Command { ActivityDto = activityDto, AcivityId = id }));
         }
 
         [HttpDelete("{id}")]

@@ -1,4 +1,5 @@
-using Domain;
+using Application.Models;
+using Domain.Models;
 using MediatR;
 using Persistence;
 
@@ -8,7 +9,7 @@ namespace Application.Activities
     {
         public class Command : IRequest
         {
-            public Activity Activity { get; set; }
+            public ActivityDto ActivityDto { get; set; }
 
             public Guid AcivityId { get; set; }
         }
@@ -27,11 +28,24 @@ namespace Application.Activities
             {
                 var activity = await this.dataContext.Activities.FindAsync(request.AcivityId, cancellationToken);
 
-                activity.UpdateTitle(request.Activity.Title);
-                activity.UpdateDescription(request.Activity.Description);
-                activity.UpdateDate(request.Activity.Date);
-                activity.UpdateCategory(request.Activity.Category);
-                activity.UpdateAddress(request.Activity.Address);
+                activity.UpdateTitle(request.ActivityDto.Title);
+                activity.UpdateDescription(request.ActivityDto.Description);
+                activity.UpdateDate(request.ActivityDto.Date);
+                activity.UpdateCategory(
+                        new Category(
+                            name: request.ActivityDto.Category.Name,
+                            description: request.ActivityDto.Description));
+                activity.UpdateAddress(
+                        new Address(
+                            street: request.ActivityDto.Address.Street,
+                            city: request.ActivityDto.Address.City,
+                            state: request.ActivityDto.Address.State,
+                            country: request.ActivityDto.Address.Country,
+                            zipcode: request.ActivityDto.Address.ZipCode,
+                            venue: request.ActivityDto.Address.Venue
+                    ));
+
+                dataContext.Activities.Update(activity);
 
                 await dataContext.SaveChangesAsync(cancellationToken);
 

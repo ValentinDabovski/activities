@@ -1,4 +1,6 @@
-using Domain;
+using Application.Models;
+using Domain.Factories.Activities;
+using Domain.Models;
 using MediatR;
 using Persistence;
 
@@ -8,7 +10,7 @@ namespace Application.Activities
     {
         public class Command : IRequest
         {
-            public Activity Activity { get; set; }
+            public ActivityDto ActivityDto { get; set; }
         }
 
         private class Handler : IRequestHandler<Command>
@@ -17,12 +19,23 @@ namespace Application.Activities
             public Handler(DataContext dataContext) => this.dataContext = dataContext;
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var activity = new Activity(
-                    title: request.Activity.Title,
-                    description: request.Activity.Description,
-                    date: request.Activity.Date,
-                    address: request.Activity.Address,
-                    category: request.Activity.Category);
+                var activity = new ActivityFactory()
+                    .WithTitle(request.ActivityDto.Title)
+                    .WithDescription(request.ActivityDto.Description)
+                    .WithDate(request.ActivityDto.Date)
+                    .WithCategory(
+                            new Category(
+                            name: request.ActivityDto.Category.Name,
+                            description: request.ActivityDto.Category.Description))
+                    .WithAddress(
+                            new Address(
+                            street: request.ActivityDto.Address.Street,
+                            city: request.ActivityDto.Address.City,
+                            state: request.ActivityDto.Address.State,
+                            country: request.ActivityDto.Address.Country,
+                            zipcode: request.ActivityDto.Address.ZipCode,
+                            venue: request.ActivityDto.Address.Venue))
+                    .Build();
 
                 await this.dataContext.Activities.AddAsync(activity, cancellationToken);
 
