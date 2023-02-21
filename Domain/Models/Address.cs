@@ -7,9 +7,9 @@ namespace Domain.Models
     {
         public Address(string street, string city, string state, string country, string zipcode, string venue)
         {
-            this.ValidateAgainstEmptyString(city);
-            this.ValidateAgainstEmptyString(street);
-            this.ValidateAgainstEmptyString(venue);
+            this.ValidateAgainstEmptyString(city, nameof(city));
+            this.ValidateAgainstEmptyString(street, nameof(street));
+            this.ValidateAgainstEmptyString(venue, nameof(venue));
 
             this.Street = street;
             this.City = city;
@@ -27,9 +27,9 @@ namespace Domain.Models
         public string Venue { get; private set; }
 
 
-        private void ValidateAgainstEmptyString(string stringForValidation)
+        private void ValidateAgainstEmptyString(string stringForValidation, string paramName)
         {
-            Guard.AgainstEmptyString<InvalidAddressException>(value: stringForValidation);
+            Guard.AgainstEmptyString<InvalidAddressException>(value: stringForValidation, name: paramName);
         }
     }
 }

@@ -1,26 +1,30 @@
 using MediatR;
 using Persistence;
 using Application.Models;
+using Application.Common;
 
 namespace Application.Activities
 {
     public class Details
     {
-        public class Query : IRequest<ActivityDto>
+        public class Query : IRequest<Result<ActivityDto>>
         {
             public Guid Id { get; set; }
         }
 
-        private class Handler : IRequestHandler<Query, ActivityDto>
+        private class Handler : IRequestHandler<Query, Result<ActivityDto>>
         {
             private readonly DataContext dataContext;
 
             public Handler(DataContext dataContext) => this.dataContext = dataContext;
 
-            public async Task<ActivityDto> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var activity = await this.dataContext.Activities.FindAsync(request.Id, cancellationToken);
-                return new ActivityDto
+
+                if (activity == null) return Result<ActivityDto>.Failure(new List<string> { "Activity not found." });
+
+                var activityDto = new ActivityDto
                 {
                     Id = activity.Id,
                     Title = activity.Title,
@@ -40,6 +44,8 @@ namespace Application.Activities
                         Description = activity.Category.Description
                     }
                 };
+
+                return Result<ActivityDto>.SuccessWith(activityDto);
             }
         }
     }

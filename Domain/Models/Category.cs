@@ -8,7 +8,7 @@ namespace Domain.Models
         public Category(string name, string description)
         {
 
-            this.ValidateAgainstEmptyString(name);
+            this.ValidateAgainstEmptyString(name, nameof(name));
 
             this.Name = name;
             this.Description = description;
@@ -21,9 +21,9 @@ namespace Domain.Models
         public string Description { get; private set; }
 
 
-        private void ValidateAgainstEmptyString(string stringForValidation)
+        private void ValidateAgainstEmptyString(string stringForValidation, string paramName)
         {
-            Guard.AgainstEmptyString<InvalidCategoryException>(value: stringForValidation);
+            Guard.AgainstEmptyString<InvalidCategoryException>(value: stringForValidation, name: paramName);
         }
     }
 }

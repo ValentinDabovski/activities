@@ -2,25 +2,25 @@ using MediatR;
 using Persistence;
 using Microsoft.EntityFrameworkCore;
 using Application.Models;
-using System.Linq;
+using Application.Common;
 
 namespace Application.Activities
 {
     public class List
     {
-        public class Query : IRequest<List<ActivityDto>> { }
+        public class Query : IRequest<Result<List<ActivityDto>>> { }
 
-        private class Handler : IRequestHandler<Query, List<ActivityDto>>
+        private class Handler : IRequestHandler<Query, Result<List<ActivityDto>>>
         {
             private readonly DataContext dataContext;
 
             public Handler(DataContext dataContext) => this.dataContext = dataContext;
 
-            public async Task<List<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<List<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var activities = await this.dataContext.Activities.ToListAsync(cancellationToken);
 
-                return activities.Select(activity => new ActivityDto
+                var activityDtos = activities.Select(activity => new ActivityDto
                 {
                     Id = activity.Id,
                     Title = activity.Title,
@@ -40,6 +40,8 @@ namespace Application.Activities
                         Description = activity.Category.Description
                     }
                 }).ToList();
+
+                return Result<List<ActivityDto>>.SuccessWith(activityDtos);
             }
         }
     }

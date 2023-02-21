@@ -7,10 +7,10 @@ namespace Domain.Models
     {
         internal Activity(string title, string description, bool isAvailable, DateTime date, Address address, Category category)
         {
-            this.ValidateAgainstEmptyString(title);
-            this.ValidateAgainstEmptyString(description);
-            this.ValidateAgainstEmptyString(address.City);
-            this.ValidateAgainstEmptyString(category.Name);
+            this.ValidateAgainstEmptyString(title, nameof(title));
+            this.ValidateAgainstEmptyString(description, nameof(description));
+            this.ValidateAgainstEmptyString(address.City, nameof(address.City));
+            this.ValidateAgainstEmptyString(category.Name, nameof(category.Name));
 
             this.Id = Guid.NewGuid();
             this.Title = title;
@@ -71,9 +71,9 @@ namespace Domain.Models
             return this;
         }
 
-        private void ValidateAgainstEmptyString(string stringForValidation)
+        private void ValidateAgainstEmptyString(string stringForValidation, string paramName)
         {
-            Guard.AgainstEmptyString<InvalidActivityException>(value: stringForValidation);
+            Guard.AgainstEmptyString<InvalidActivityException>(value: stringForValidation, name: paramName);
         }
     }
 }

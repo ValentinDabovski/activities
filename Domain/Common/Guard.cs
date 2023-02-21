@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Domain.Exceptions;
 
 namespace Domain.Common
@@ -16,7 +12,7 @@ namespace Domain.Common
                 return;
             }
 
-            ThrowException<TException>($"{name} cannot be null ot empty.");
+            ThrowException<TException>($"{name} cannot be null or empty.");
         }
 
         public static void ForStringLength<TException>(string value, int minLength, int maxLength, string name = "Value")
