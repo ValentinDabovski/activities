@@ -2,6 +2,8 @@ using MediatR;
 using Persistence;
 using Application.Models;
 using Application.Common;
+using AutoMapper;
+using Domain.Models;
 
 namespace Application.Activities
 {
@@ -15,37 +17,22 @@ namespace Application.Activities
         private class Handler : IRequestHandler<Query, Result<ActivityDto>>
         {
             private readonly DataContext dataContext;
-
-            public Handler(DataContext dataContext) => this.dataContext = dataContext;
-
+            private readonly IMapper mapper;
+            
+            public Handler(DataContext dataContext, IMapper mapper)
+            {
+                this.dataContext = dataContext;
+                this.mapper = mapper;
+            }
             public async Task<Result<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var activity = await this.dataContext.Activities.FindAsync(request.Id, cancellationToken);
 
                 if (activity == null) return Result<ActivityDto>.Failure(new List<string> { "Activity not found." });
 
-                var activityDto = new ActivityDto
-                {
-                    Id = activity.Id,
-                    Title = activity.Title,
-                    Description = activity.Description,
-                    Address = new AddressDto
-                    {
-                        Street = activity.Address.Street,
-                        City = activity.Address.City,
-                        State = activity.Address.State,
-                        Country = activity.Address.Country,
-                        ZipCode = activity.Address.ZipCode,
-                        Venue = activity.Address.Venue
-                    },
-                    Category = new CategoryDto
-                    {
-                        Name = activity.Category.Name,
-                        Description = activity.Category.Description
-                    }
-                };
-
-                return Result<ActivityDto>.SuccessWith(activityDto);
+                return Result<ActivityDto>
+                    .SuccessWith(
+                        this.mapper.Map<Activity,ActivityDto>(activity));
             }
         }
     }

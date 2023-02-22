@@ -1,5 +1,6 @@
 using Application.Common;
 using Application.Models;
+using AutoMapper;
 using Domain.Exceptions;
 using Domain.Models;
 using MediatR;
@@ -20,9 +21,12 @@ namespace Application.Activities
         {
             private readonly DataContext dataContext;
 
-            public Handler(DataContext dataContext)
+            private readonly IMapper mapper;
+
+            public Handler(DataContext dataContext, IMapper mapper)
             {
                 this.dataContext = dataContext;
+                this.mapper = mapper;
             }
 
 

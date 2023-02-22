@@ -1,3 +1,4 @@
+using System.Reflection;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -27,6 +28,9 @@ namespace API.Extensions
             });
 
             services.AddMediatR(typeof(Application.Activities.List));
+        
+            services.AddAutoMapper(typeof(Application.Mapping.MappingProfile).Assembly);
+
             return services;
         }
     }
