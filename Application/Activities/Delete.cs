@@ -19,25 +19,18 @@ namespace Application.Activities
 
             public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
             {
-                try
+                var activity = await this.dataContext.Activities.FindAsync(request.Id, cancellationToken);
+
+                if (activity == null)
                 {
-                    var activity = await this.dataContext.Activities.FindAsync(request.Id, cancellationToken);
-
-                    if (activity == null)
-                    {
-                        Result.Failure(new List<string> { "Activity not found." });
-                    }
-
-                    this.dataContext.Activities.Remove(activity);
-
-                    await this.dataContext.SaveChangesAsync(cancellationToken);
-
-                    return Result.Success;
+                    return Result.Failure("Activity not found.");
                 }
-                catch (Exception e)
-                {
-                    return Result.Failure(new List<string> { e.Message, e.InnerException.Message });
-                }
+
+                this.dataContext.Activities.Remove(activity);
+
+                await this.dataContext.SaveChangesAsync(cancellationToken);
+
+                return Result.Success();
             }
         }
     }

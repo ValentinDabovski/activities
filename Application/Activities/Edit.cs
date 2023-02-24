@@ -3,6 +3,7 @@ using Application.Models;
 using AutoMapper;
 using Domain.Exceptions;
 using Domain.Models;
+using FluentValidation;
 using MediatR;
 using Persistence;
 
@@ -15,6 +16,14 @@ namespace Application.Activities
             public ActivityDto ActivityDto { get; set; }
 
             public Guid AcivityId { get; set; }
+        }
+
+        public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator()
+            {
+                RuleFor(x => x.ActivityDto).SetValidator(new ActivityValidator());
+            }
         }
 
         private class Handler : IRequestHandler<Command, Result>
@@ -32,43 +41,32 @@ namespace Application.Activities
 
             public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
             {
-                try
-                {
-                    var activity = await this.dataContext.Activities.FindAsync(request.AcivityId, cancellationToken);
+                var activity = await this.dataContext.Activities.FindAsync(request.AcivityId, cancellationToken);
 
-                    if (activity == null) return Result.Failure(new List<string> { "Activity not found." });
+                if (activity == null) return Result.Failure("Activity not found.");
 
-                    activity.UpdateTitle(request.ActivityDto.Title);
-                    activity.UpdateDescription(request.ActivityDto.Description);
-                    activity.UpdateDate(request.ActivityDto.Date);
-                    activity.UpdateCategory(
-                            new Category(
-                                name: request.ActivityDto.Category.Name,
-                                description: request.ActivityDto.Description));
-                    activity.UpdateAddress(
-                            new Address(
-                                street: request.ActivityDto.Address.Street,
-                                city: request.ActivityDto.Address.City,
-                                state: request.ActivityDto.Address.State,
-                                country: request.ActivityDto.Address.Country,
-                                zipcode: request.ActivityDto.Address.ZipCode,
-                                venue: request.ActivityDto.Address.Venue
-                        ));
+                activity.UpdateTitle(request.ActivityDto.Title);
+                activity.UpdateDescription(request.ActivityDto.Description);
+                activity.UpdateDate(request.ActivityDto.Date);
+                activity.UpdateCategory(
+                        new Category(
+                            name: request.ActivityDto.Category.Name,
+                            description: request.ActivityDto.Description));
+                activity.UpdateAddress(
+                        new Address(
+                            street: request.ActivityDto.Address.Street,
+                            city: request.ActivityDto.Address.City,
+                            state: request.ActivityDto.Address.State,
+                            country: request.ActivityDto.Address.Country,
+                            zipcode: request.ActivityDto.Address.ZipCode,
+                            venue: request.ActivityDto.Address.Venue
+                    ));
 
-                    dataContext.Activities.Update(activity);
+                dataContext.Activities.Update(activity);
 
-                    await dataContext.SaveChangesAsync(cancellationToken);
+                await dataContext.SaveChangesAsync(cancellationToken);
 
-                    return Result.Success;
-                }
-                catch (InvalidActivityException e)
-                {
-                    return Result.Failure(new List<string> { e.Message, e.Error });
-                }
-                catch (InvalidCategoryException e)
-                {
-                    return Result.Failure(new List<string> { e.Message, e.Error });
-                }
+                return Result.Success();
             }
         }
     }

@@ -27,9 +27,9 @@ namespace Application.Activities
             public async Task<Result<List<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var activities = await this.dataContext.Activities.ToListAsync(cancellationToken);
-                
+
                 return Result<List<ActivityDto>>
-                    .SuccessWith(this.mapper.Map<List<Activity>, List<ActivityDto>>(activities));
+                    .Success(this.mapper.Map<List<Activity>, List<ActivityDto>>(activities));
             }
         }
     }
