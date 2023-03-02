@@ -28,6 +28,8 @@ namespace Application.Activities
             {
                 var activity = await this.dataContext.Activities.FindAsync(request.Id, cancellationToken);
 
+                if (activity == null) return Result<ActivityDto>.Failure(new List<string> { "Activity not found." });
+
                 return Result<ActivityDto>
                     .SuccessWith(this.mapper.Map<Activity, ActivityDto>(activity));
             }

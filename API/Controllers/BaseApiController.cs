@@ -16,7 +16,7 @@ namespace API.Controllers
         {
             if (result.Succeeded)
                 return Ok(result.Data);
-            if (result == null)
+            if (!result.Succeeded && result.Errors.Any(x => x.ToLower().Contains("not found")))
                 return NotFound();
 
             return BadRequest(result.Errors);
