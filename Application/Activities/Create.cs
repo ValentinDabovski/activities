@@ -51,7 +51,7 @@ namespace Application.Activities
 
                 await this.dataContext.SaveChangesAsync(cancellationToken);
 
-                return Result.Success();
+                return Result.Success;
             }
         }
     }

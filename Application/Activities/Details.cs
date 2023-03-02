@@ -29,7 +29,7 @@ namespace Application.Activities
                 var activity = await this.dataContext.Activities.FindAsync(request.Id, cancellationToken);
 
                 return Result<ActivityDto>
-                    .Success(this.mapper.Map<Activity, ActivityDto>(activity));
+                    .SuccessWith(this.mapper.Map<Activity, ActivityDto>(activity));
             }
         }
     }

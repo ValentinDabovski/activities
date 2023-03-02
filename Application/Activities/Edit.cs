@@ -1,7 +1,6 @@
 using Application.Common;
 using Application.Models;
 using AutoMapper;
-using Domain.Exceptions;
 using Domain.Models;
 using FluentValidation;
 using MediatR;
@@ -43,7 +42,7 @@ namespace Application.Activities
             {
                 var activity = await this.dataContext.Activities.FindAsync(request.AcivityId, cancellationToken);
 
-                if (activity == null) return Result.Failure("Activity not found.");
+                if (activity == null) return Result.Failure(new List<string> { "Activity not found." });
 
                 activity.UpdateTitle(request.ActivityDto.Title);
                 activity.UpdateDescription(request.ActivityDto.Description);
@@ -66,7 +65,7 @@ namespace Application.Activities
 
                 await dataContext.SaveChangesAsync(cancellationToken);
 
-                return Result.Success();
+                return Result.Success;
             }
         }
     }

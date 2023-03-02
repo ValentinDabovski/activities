@@ -14,20 +14,22 @@ namespace API.Controllers
 
         protected IActionResult HandleResult<T>(Result<T> result)
         {
-            if (result.IsSuccess && result.Value != null)
-                return Ok(result.Value);
-            if (result.IsSuccess && result.Value == null)
+            if (result.Succeeded)
+                return Ok(result.Data);
+            if (result == null)
                 return NotFound();
 
-            return BadRequest(result.Error);
+            return BadRequest(result.Errors);
         }
 
         protected IActionResult HandleResult(Result result)
         {
-            if (result.IsSuccess)
+            if (result.Succeeded)
                 return Ok();
+            if (!result.Succeeded && result.Errors.Any(x => x.ToLower().Contains("not found")))
+                return NotFound();
 
-            return BadRequest(result.Error);
+            return BadRequest(result.Errors);
         }
     }
 }

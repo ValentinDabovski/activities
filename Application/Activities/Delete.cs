@@ -21,16 +21,13 @@ namespace Application.Activities
             {
                 var activity = await this.dataContext.Activities.FindAsync(request.Id, cancellationToken);
 
-                if (activity == null)
-                {
-                    return Result.Failure("Activity not found.");
-                }
+                if (activity == null) return Result.Failure(new List<string> { "Activity not found." });
 
                 this.dataContext.Activities.Remove(activity);
 
                 await this.dataContext.SaveChangesAsync(cancellationToken);
 
-                return Result.Success();
+                return Result.Success;
             }
         }
     }
