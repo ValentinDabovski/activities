@@ -53,10 +53,11 @@ namespace API.Middleware
             this.Details = details;
 
         }
-        public int StatusCode { get; private set; }
 
-        public string Message { get; private set; }
+        private int StatusCode { get; set; }
 
-        public string Details { get; private set; }
+        private string Message { get; set; }
+
+        private string Details { get; set; }
     }
 }
