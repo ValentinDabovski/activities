@@ -1,4 +1,5 @@
-﻿using Duende.IdentityServer.Models;
+﻿using Duende.IdentityServer;
+using Duende.IdentityServer.Models;
 
 namespace Identity;
 
@@ -7,17 +8,14 @@ public static class Config
     public static IEnumerable<IdentityResource> IdentityResources =>
         new IdentityResource[]
         {
-            new IdentityResources.OpenId()
+            new IdentityResources.OpenId(),
+            new IdentityResources.Profile()
         };
 
     public static IEnumerable<ApiScope> ApiScopes =>
         new List<ApiScope>
         {
-            new()
-            {
-                Name = "activities-api",
-                DisplayName = "ActivitiesApi"
-            }
+            new("activities-api")
         };
 
     public static IEnumerable<Client> Clients =>
@@ -26,10 +24,23 @@ public static class Config
             new()
             {
                 ClientId = "ActivitiesApi",
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
-                ClientSecrets = { new Secret("secret".Sha256()) },
+                ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
 
-                AllowedScopes = { "activities-api" }
+                AllowOfflineAccess = true,
+                AllowedGrantTypes = GrantTypes.Code,
+
+                // where to redirect to after login
+                RedirectUris = { "https://localhost:5001/signin-oidc" },
+
+                // where to redirect to after logout
+                PostLogoutRedirectUris = { "https://localhost:5001/signout-callback-oidc" },
+
+                AllowedScopes = new List<string>
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "activities-api"
+                }
             }
         };
 }
