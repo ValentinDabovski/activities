@@ -1,5 +1,4 @@
-﻿using Duende.IdentityServer;
-using Duende.IdentityServer.Models;
+﻿using Duende.IdentityServer.Models;
 
 namespace Identity;
 
@@ -13,34 +12,40 @@ public static class Config
         };
 
     public static IEnumerable<ApiScope> ApiScopes =>
-        new List<ApiScope>
+        new[]
         {
-            new("activities-api")
+            new ApiScope("activities-api")
         };
 
     public static IEnumerable<Client> Clients =>
-        new List<Client>
+        new[]
         {
+            // m2m client credentials flow client
             new()
+            {
+                ClientId = "m2m.client",
+                ClientName = "Client Credentials Client",
+
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
+
+                AllowedScopes = { "api1" }
+            },
+
+            // interactive client using code flow + pkce
+            new Client
             {
                 ClientId = "ActivitiesApi",
                 ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
 
-                AllowOfflineAccess = true,
                 AllowedGrantTypes = GrantTypes.Code,
 
-                // where to redirect to after login
                 RedirectUris = { "https://localhost:5001/signin-oidc" },
-
-                // where to redirect to after logout
+                FrontChannelLogoutUri = "https://localhost:5001/signout-oidc",
                 PostLogoutRedirectUris = { "https://localhost:5001/signout-callback-oidc" },
 
-                AllowedScopes = new List<string>
-                {
-                    IdentityServerConstants.StandardScopes.OpenId,
-                    IdentityServerConstants.StandardScopes.Profile,
-                    "activities-api"
-                }
+                AllowOfflineAccess = true,
+                AllowedScopes = { "openid", "profile", "activities-api" }
             }
         };
 }

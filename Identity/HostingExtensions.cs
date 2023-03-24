@@ -1,4 +1,10 @@
 using Duende.IdentityServer;
+using Duende.IdentityServer.EntityFramework.DbContexts;
+using Duende.IdentityServer.EntityFramework.Mappers;
+using Identity.Data;
+using Identity.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace Identity;
@@ -9,7 +15,18 @@ internal static class HostingExtensions
     {
         builder.Services.AddRazorPages();
 
-        var isBuilder = builder.Services.AddIdentityServer(options =>
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
+
+        var migrationsAssembly = typeof(Program).Assembly.GetName().Name;
+        const string connectionString = @"Data Source=AspIdUsers.db";
+        builder.Services
+            .AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
@@ -19,27 +36,17 @@ internal static class HostingExtensions
                 // see https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/
                 options.EmitStaticAudienceClaim = true;
             })
-            .AddTestUsers(TestUsers.Users);
-
-        // in-memory, code config
-        isBuilder.AddInMemoryIdentityResources(Config.IdentityResources);
-        isBuilder.AddInMemoryApiScopes(Config.ApiScopes);
-        isBuilder.AddInMemoryClients(Config.Clients);
-        isBuilder.AddTestUsers(TestUsers.Users);
-
-
-        // if you want to use server-side sessions: https://blog.duendesoftware.com/posts/20220406_session_management/
-        // then enable it
-        //isBuilder.AddServerSideSessions();
-        //
-        // and put some authorization on the admin/management pages
-        //builder.Services.AddAuthorization(options =>
-        //       options.AddPolicy("admin",
-        //           policy => policy.RequireClaim("sub", "1"))
-        //   );
-        //builder.Services.Configure<RazorPagesOptions>(options =>
-        //    options.Conventions.AuthorizeFolder("/ServerSideSessions", "admin"));
-
+            .AddConfigurationStore(options =>
+            {
+                options.ConfigureDbContext = b => b.UseSqlite(connectionString,
+                    sql => sql.MigrationsAssembly(migrationsAssembly));
+            })
+            .AddOperationalStore(options =>
+            {
+                options.ConfigureDbContext = b => b.UseSqlite(connectionString,
+                    sql => sql.MigrationsAssembly(migrationsAssembly));
+            })
+            .AddAspNetIdentity<ApplicationUser>();
 
         builder.Services.AddAuthentication()
             .AddGoogle(options =>
@@ -62,6 +69,8 @@ internal static class HostingExtensions
 
         if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
 
+        InitializeDatabase(app);
+
         app.UseStaticFiles();
         app.UseRouting();
         app.UseIdentityServer();
@@ -71,5 +80,31 @@ internal static class HostingExtensions
             .RequireAuthorization();
 
         return app;
+    }
+
+    private static void InitializeDatabase(IApplicationBuilder app)
+    {
+        using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
+        serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+
+        var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+        context.Database.Migrate();
+        if (!context.Clients.Any())
+        {
+            foreach (var client in Config.Clients) context.Clients.Add(client.ToEntity());
+            context.SaveChanges();
+        }
+
+        if (!context.IdentityResources.Any())
+        {
+            foreach (var resource in Config.IdentityResources) context.IdentityResources.Add(resource.ToEntity());
+            context.SaveChanges();
+        }
+
+        if (!context.ApiScopes.Any())
+        {
+            foreach (var resource in Config.ApiScopes) context.ApiScopes.Add(resource.ToEntity());
+            context.SaveChanges();
+        }
     }
 }
