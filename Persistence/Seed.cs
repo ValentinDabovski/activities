@@ -3,7 +3,7 @@ using Domain.Models;
 
 namespace Persistence
 {
-    public class Seed
+    public abstract class Seed
     {
         public static async Task SeedData(DataContext context)
         {
