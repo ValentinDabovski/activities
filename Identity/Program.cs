@@ -1,4 +1,6 @@
 ﻿using Identity;
+using Identity.Data;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -18,19 +20,27 @@ try
         .Enrich.FromLogContext()
         .ReadFrom.Configuration(ctx.Configuration));
 
-    var app = builder
-        .ConfigureServices()
-        .ConfigurePipeline();
+    builder.Services.AddRazorPages();
 
-    // this seeding is only for the template to bootstrap the DB and users.
-    // in production you will likely want a different approach.
-    if (args.Contains("/seed"))
-    {
-        Log.Information("Seeding database...");
-        SeedData.EnsureSeedData(app);
-        Log.Information("Done seeding database. Exiting.");
-        return;
-    }
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+    builder.ConfigureIdentityServer();
+
+    var app = builder.Build();
+
+
+    app.UseSerilogRequestLogging();
+
+    if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
+
+    app.UseStaticFiles();
+    app.UseRouting();
+    app.UseIdentityServer();
+    app.UseAuthorization();
+
+    app.MapRazorPages()
+        .RequireAuthorization();
 
     app.Run();
 }
