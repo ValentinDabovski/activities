@@ -2,7 +2,7 @@
 // See LICENSE in the project root for license information.
 
 
-namespace Identity.Web.Pages.Logout;
+namespace Identity.Web.Pages.Account.Logout;
 
 public class LoggedOutViewModel
 {

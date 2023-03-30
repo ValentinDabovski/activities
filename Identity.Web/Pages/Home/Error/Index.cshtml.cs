@@ -2,7 +2,7 @@ using Duende.IdentityServer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Identity.Web.Pages.Error;
+namespace Identity.Web.Pages.Home.Error;
 
 [AllowAnonymous]
 [SecurityHeaders]

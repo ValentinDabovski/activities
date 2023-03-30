@@ -1,5 +1,6 @@
 ﻿using Identity.Web;
 using Identity.Web.Data;
+using Identity.Web.Infrastructure.EventDispatcher;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -26,6 +27,8 @@ try
         options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
     builder.ConfigureIdentityServer();
+
+    builder.Services.AddScoped<IEventSink, EventDispatcher>();
 
     var app = builder.Build();
 
