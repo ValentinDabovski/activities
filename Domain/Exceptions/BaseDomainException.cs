@@ -1,13 +1,12 @@
-namespace Domain.Exceptions
-{
-    public class BaseDomainException : Exception
-    {
-        private string error;
+namespace Domain.Exceptions;
 
-        public string Error
-        {
-            get => this.error ?? base.Message;
-            set => this.error = value;
-        }
+public class BaseDomainException : Exception
+{
+    private string _error;
+
+    public string Error
+    {
+        get => _error ?? base.Message;
+        set => _error = value;
     }
 }

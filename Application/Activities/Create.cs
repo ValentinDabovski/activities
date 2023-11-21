@@ -5,54 +5,74 @@ using Domain.Models;
 using FluentValidation;
 using MediatR;
 using Persistence;
+using Persistence.Models;
 
-namespace Application.Activities
+namespace Application.Activities;
+
+public abstract class Create
 {
-    public class Create
+    public class Command : IRequest<Result>
     {
-        public class Command : IRequest<Result>
+        public ActivityDto ActivityDto { get; init; }
+    }
+
+    public class CommandValidator : AbstractValidator<Command>
+    {
+        public CommandValidator()
         {
-            public ActivityDto ActivityDto { get; set; }
+            RuleFor(x => x.ActivityDto).SetValidator(new ActivityValidator());
+        }
+    }
+
+    private class Handler : IRequestHandler<Command, Result>
+    {
+        private readonly DataContext _dataContext;
+
+        public Handler(DataContext dataContext)
+        {
+            _dataContext = dataContext;
         }
 
-        public class CommandValidator : AbstractValidator<Command>
+        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            public CommandValidator()
+            var activity = new ActivityFactory()
+                .WithTitle(request.ActivityDto.Title)
+                .WithDescription(request.ActivityDto.Description)
+                .WithDate(request.ActivityDto.Date)
+                .WithCategory(
+                    new Category(
+                        request.ActivityDto.Category.Name,
+                        request.ActivityDto.Category.Description))
+                .WithAddress(
+                    new Address(
+                        request.ActivityDto.Address.Street,
+                        request.ActivityDto.Address.City,
+                        request.ActivityDto.Address.State,
+                        request.ActivityDto.Address.Country,
+                        request.ActivityDto.Address.ZipCode,
+                        request.ActivityDto.Address.Venue))
+                .Build();
+
+            await _dataContext.Activities.AddAsync(new ActivityEntity
             {
-                RuleFor(x => x.ActivityDto).SetValidator(new ActivityValidator());
-            }
-        }
+                Title = activity.Title,
+                Address = new AddressEntity
+                {
+                    City = activity.Address.City, Country = activity.Address.Country, State = activity.Address.State,
+                    Street = activity.Address.Street, Venue = activity.Address.Venue,
+                    ZipCode = activity.Address.ZipCode
+                },
+                Category = new CategoryEntity
+                    { Name = activity.Category.Name, Description = activity.Category.Description },
+                Date = activity.Date,
+                Description = activity.Description,
+                IsAvailable = activity.IsAvailable,
+                Id = activity.Id
+            }, cancellationToken);
 
-        private class Handler : IRequestHandler<Command, Result>
-        {
-            private readonly DataContext dataContext;
-            public Handler(DataContext dataContext) => this.dataContext = dataContext;
-            public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
-            {
-                var activity = new ActivityFactory()
-                    .WithTitle(request.ActivityDto.Title)
-                    .WithDescription(request.ActivityDto.Description)
-                    .WithDate(request.ActivityDto.Date)
-                    .WithCategory(
-                            new Category(
-                                name: request.ActivityDto.Category.Name,
-                                description: request.ActivityDto.Category.Description))
-                    .WithAddress(
-                            new Address(
-                                street: request.ActivityDto.Address.Street,
-                                city: request.ActivityDto.Address.City,
-                                state: request.ActivityDto.Address.State,
-                                country: request.ActivityDto.Address.Country,
-                                zipcode: request.ActivityDto.Address.ZipCode,
-                                venue: request.ActivityDto.Address.Venue))
-                    .Build();
+            await _dataContext.SaveChangesAsync(cancellationToken);
 
-                await this.dataContext.Activities.AddAsync(activity, cancellationToken);
-
-                await this.dataContext.SaveChangesAsync(cancellationToken);
-
-                return Result.Success;
-            }
+            return Result.Success;
         }
     }
 }

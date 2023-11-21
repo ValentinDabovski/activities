@@ -1,35 +1,35 @@
-using Microsoft.AspNetCore.Mvc;
-using MediatR;
 using Application.Common;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class BaseApiController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class BaseApiController : ControllerBase
+    private IMediator _mediator;
+
+    protected IMediator Mediator
+        => _mediator ?? HttpContext.RequestServices.GetService<IMediator>();
+
+    protected IActionResult HandleResult<T>(Result<T> result)
     {
-        private IMediator mediator;
-        protected IMediator Mediator
-             => mediator ?? HttpContext.RequestServices.GetService<IMediator>();
-
-        protected IActionResult HandleResult<T>(Result<T> result)
+        return result.Succeeded switch
         {
-            if (result.Succeeded)
-                return Ok(result.Data);
-            if (!result.Succeeded && result.Errors.Any(x => x.ToLower().Contains("not found")))
-                return NotFound();
+            true => Ok(result.Data),
+            false when result.Errors.Any(x => x.ToLower().Contains("not found")) => NotFound(),
+            _ => BadRequest(result.Errors)
+        };
+    }
 
-            return BadRequest(result.Errors);
-        }
-
-        protected IActionResult HandleResult(Result result)
+    protected IActionResult HandleResult(Result result)
+    {
+        return result.Succeeded switch
         {
-            if (result.Succeeded)
-                return Ok();
-            if (!result.Succeeded && result.Errors.Any(x => x.ToLower().Contains("not found")))
-                return NotFound();
-
-            return BadRequest(result.Errors);
-        }
+            true => Ok(),
+            false when result.Errors.Any(x => x.ToLower().Contains("not found")) => NotFound(),
+            _ => BadRequest(result.Errors)
+        };
     }
 }

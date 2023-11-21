@@ -1,57 +1,56 @@
 using Domain.Models;
 
-namespace Domain.Factories.Activities
+namespace Domain.Factories.Activities;
+
+public class ActivityFactory : IActivityFactory
 {
-    public class ActivityFactory : IActivityFactory
+    private readonly bool _isAvailable = false;
+    private Address _address;
+    private Category _category;
+    private DateTime _date = DateTime.Now;
+    private string _description;
+    private string _title;
+
+
+    public Activity Build()
     {
-        private string title = default;
-        private string description = default;
-        private bool isAvailable = false;
-        private DateTime date = DateTime.Now;
-        private Address address = default;
-        private Category category = default;
+        return new Activity(
+            _title,
+            _description,
+            _isAvailable,
+            _date,
+            _address,
+            _category
+        );
+    }
 
+    public IActivityFactory WithAddress(Address address)
+    {
+        _address = address;
+        return this;
+    }
 
-        public Activity Build()
-        {
-            return new Activity(
-                title: title,
-                description: description,
-                isAvailable: isAvailable,
-                date: date,
-                address: address,
-                category: category
-            );
-        }
+    public IActivityFactory WithCategory(Category category)
+    {
+        _category = category;
+        return this;
+    }
 
-        public IActivityFactory WithAddress(Address address)
-        {
-            this.address = address;
-            return this;
-        }
+    public IActivityFactory WithDate(DateTime date)
+    {
+        _date = date;
+        return this;
+    }
 
-        public IActivityFactory WithCategory(Category category)
-        {
-            this.category = category;
-            return this;
-        }
-        
-        public IActivityFactory WithDate(DateTime date)
-        {
-            this.date = date;
-            return this;
-        }
+    public IActivityFactory WithDescription(string description)
+    {
+        _description = description;
+        return this;
+    }
 
-        public IActivityFactory WithDescription(string description)
-        {
-            this.description = description;
-            return this;
-        }
-
-        public IActivityFactory WithTitle(string title)
-        {
-            this.title = title;
-            return this;
-        }
+    public IActivityFactory WithTitle(string title)
+    {
+        _title = title;
+        return this;
     }
 }

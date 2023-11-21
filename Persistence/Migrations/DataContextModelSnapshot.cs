@@ -17,7 +17,7 @@ namespace Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.2");
 
-            modelBuilder.Entity("Domain.Models.Activity", b =>
+            modelBuilder.Entity("Persistence.Models.ActivityEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,16 +35,45 @@ namespace Persistence.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Activities");
                 });
 
-            modelBuilder.Entity("Domain.Models.Activity", b =>
+            modelBuilder.Entity("Persistence.Models.UserEntity", b =>
                 {
-                    b.OwnsOne("Domain.Models.Address", "Address", b1 =>
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Persistence.Models.ActivityEntity", b =>
+                {
+                    b.HasOne("Persistence.Models.UserEntity", null)
+                        .WithMany("Activities")
+                        .HasForeignKey("UserId");
+
+                    b.OwnsOne("Persistence.Models.AddressEntity", "Address", b1 =>
                         {
-                            b1.Property<Guid>("ActivityId")
+                            b1.Property<Guid>("ActivityEntityId")
                                 .HasColumnType("TEXT");
 
                             b1.Property<string>("City")
@@ -66,17 +95,17 @@ namespace Persistence.Migrations
                             b1.Property<string>("ZipCode")
                                 .HasColumnType("TEXT");
 
-                            b1.HasKey("ActivityId");
+                            b1.HasKey("ActivityEntityId");
 
                             b1.ToTable("Activities");
 
                             b1.WithOwner()
-                                .HasForeignKey("ActivityId");
+                                .HasForeignKey("ActivityEntityId");
                         });
 
-                    b.OwnsOne("Domain.Models.Category", "Category", b1 =>
+                    b.OwnsOne("Persistence.Models.CategoryEntity", "Category", b1 =>
                         {
-                            b1.Property<Guid>("ActivityId")
+                            b1.Property<Guid>("ActivityEntityId")
                                 .HasColumnType("TEXT");
 
                             b1.Property<string>("Description")
@@ -86,17 +115,22 @@ namespace Persistence.Migrations
                                 .IsRequired()
                                 .HasColumnType("TEXT");
 
-                            b1.HasKey("ActivityId");
+                            b1.HasKey("ActivityEntityId");
 
                             b1.ToTable("Activities");
 
                             b1.WithOwner()
-                                .HasForeignKey("ActivityId");
+                                .HasForeignKey("ActivityEntityId");
                         });
 
                     b.Navigation("Address");
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Persistence.Models.UserEntity", b =>
+                {
+                    b.Navigation("Activities");
                 });
 #pragma warning restore 612, 618
         }

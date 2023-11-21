@@ -1,79 +1,83 @@
 using Domain.Common;
 using Domain.Exceptions;
 
-namespace Domain.Models
+namespace Domain.Models;
+
+public class Activity : IAggregateRoot
 {
-    public class Activity : IAggregateRoot
+    internal Activity(string title, string description, bool isAvailable, DateTime date, Address address,
+        Category category)
     {
-        internal Activity(string title, string description, bool isAvailable, DateTime date, Address address, Category category)
-        {
-            this.ValidateAgainstEmptyString(title, nameof(title));
-            this.ValidateAgainstEmptyString(description, nameof(description));
-            this.ValidateAgainstEmptyString(address.City, nameof(address.City));
-            this.ValidateAgainstEmptyString(category.Name, nameof(category.Name));
+        ValidateAgainstEmptyString(title, nameof(title));
+        ValidateAgainstEmptyString(description, nameof(description));
+        ValidateAgainstEmptyString(address.City, nameof(address.City));
+        ValidateAgainstEmptyString(category.Name, nameof(category.Name));
 
-            this.Id = Guid.NewGuid();
-            this.Title = title;
-            this.Description = description;
-            this.IsAvailable = isAvailable;
-            this.Date = date;
-            this.Category = category;
-            this.Address = address;
-        }
-        private Activity() { }
-        public Guid Id { get; private set; }
-        public string Title { get; private set; }
-        public DateTime Date { get; private set; }
-        public bool IsAvailable { get; private set; }
-        public string Description { get; private set; }
-        public Category Category { get; private set; }
-        public Address Address { get; private set; }
+        Id = Guid.NewGuid();
+        Title = title;
+        Description = description;
+        IsAvailable = isAvailable;
+        Date = date;
+        Category = category;
+        Address = address;
+    }
 
-        public Activity UpdateDate(DateTime newdDte)
-        {
-            this.Date = newdDte;
+    private Activity()
+    {
+    }
 
-            return this;
-        }
+    public Guid Id { get; private set; }
+    public string Title { get; private set; }
+    public DateTime Date { get; private set; }
+    public bool IsAvailable { get; private set; }
+    public string Description { get; private set; }
+    public Category Category { get; private set; }
+    public Address Address { get; private set; }
 
-        public Activity UpdateTitle(string newTitle)
-        {
-            this.Title = newTitle;
+    public Activity UpdateDate(DateTime newDate)
+    {
+        Date = newDate;
 
-            return this;
-        }
+        return this;
+    }
 
-        public Activity UpdateDescription(string newDescription)
-        {
-            this.Description = newDescription;
+    public Activity UpdateTitle(string newTitle)
+    {
+        Title = newTitle;
 
-            return this;
-        }
+        return this;
+    }
 
-        public Activity UpdateCategory(Category newCategory)
-        {
-            this.Category = newCategory;
+    public Activity UpdateDescription(string newDescription)
+    {
+        Description = newDescription;
 
-            return this;
-        }
+        return this;
+    }
 
-        public Activity UpdateAddress(Address newAddress)
-        {
-            this.Address = newAddress;
+    public Activity UpdateCategory(Category newCategory)
+    {
+        Category = newCategory;
 
-            return this;
-        }
+        return this;
+    }
 
-        public Activity ChangeAvailability()
-        {
-            this.IsAvailable = !this.IsAvailable;
+    public Activity UpdateAddress(Address newAddress)
+    {
+        Address = newAddress;
 
-            return this;
-        }
+        return this;
+    }
 
-        private void ValidateAgainstEmptyString(string stringForValidation, string paramName)
-        {
-            Guard.AgainstEmptyString<InvalidActivityException>(value: stringForValidation, name: paramName);
-        }
+    public Activity ChangeAvailability()
+    {
+        IsAvailable = !IsAvailable;
+
+        return this;
+    }
+
+    private void ValidateAgainstEmptyString(string stringForValidation, string paramName)
+    {
+        Guard.AgainstEmptyString<InvalidActivityException>(stringForValidation, paramName);
     }
 }

@@ -1,40 +1,36 @@
+using Application.Activities;
+using Application.Mapping;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using FluentValidation.AspNetCore;
-using FluentValidation;
 
-namespace API.Extensions
+namespace API.Extensions;
+
+public static class ApplicationServices
 {
-    public static class ApplicationServices
+    public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
+
+        services.AddCors(opt =>
         {
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            opt.AddPolicy("CorsPolicy",
+                p => { p.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000"); });
+        });
 
-            services.AddCors(opt =>
-            {
-                opt.AddPolicy("CorsPolicy", p =>
-                {
-                    p.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
+        services.AddDbContext<DataContext>(opt =>
+        {
+            opt.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+        });
 
-                });
-            });
+        services.AddMediatR(typeof(List));
 
-            services.AddDbContext<DataContext>(opt =>
-            {
-                opt.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
-            });
-
-            services.AddMediatR(typeof(Application.Activities.List));
-
-            services.AddAutoMapper(typeof(Application.Mapping.MappingProfile).Assembly);
-            services.AddFluentValidationAutoValidation();
-            services.AddValidatorsFromAssemblyContaining<Application.Activities.Create>();
-
-            return services;
-        }
+        services.AddAutoMapper(typeof(MappingProfile).Assembly);
+        services.AddFluentValidationAutoValidation();
+        services.AddValidatorsFromAssemblyContaining<Create>();
     }
 }

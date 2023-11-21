@@ -1,29 +1,29 @@
 using Domain.Common;
 using Domain.Exceptions;
 
-namespace Domain.Models
+namespace Domain.Models;
+
+public record Category
 {
-    public record Category
+    public Category(string name, string description)
     {
-        public Category(string name, string description)
-        {
+        ValidateAgainstEmptyString(name, nameof(name));
 
-            this.ValidateAgainstEmptyString(name, nameof(name));
+        Name = name;
+        Description = description;
+    }
 
-            this.Name = name;
-            this.Description = description;
-        }
+    private Category()
+    {
+    }
 
-        private Category() { }
+    public string Name { get; private set; }
 
-        public string Name { get; private set; }
-
-        public string Description { get; private set; }
+    public string Description { get; private set; }
 
 
-        private void ValidateAgainstEmptyString(string stringForValidation, string paramName)
-        {
-            Guard.AgainstEmptyString<InvalidCategoryException>(value: stringForValidation, name: paramName);
-        }
+    private void ValidateAgainstEmptyString(string stringForValidation, string paramName)
+    {
+        Guard.AgainstEmptyString<InvalidCategoryException>(stringForValidation, paramName);
     }
 }

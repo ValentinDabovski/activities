@@ -1,9 +1,13 @@
-namespace Domain.Exceptions
-{
-    public class InvalidCategoryException : BaseDomainException
-    {
-        public InvalidCategoryException() { }
+namespace Domain.Exceptions;
 
-        public InvalidCategoryException(string error) => this.Error = error;
+public class InvalidCategoryException : BaseDomainException
+{
+    public InvalidCategoryException()
+    {
+    }
+
+    public InvalidCategoryException(string error)
+    {
+        Error = error;
     }
 }

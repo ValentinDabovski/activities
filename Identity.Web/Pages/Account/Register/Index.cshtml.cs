@@ -12,16 +12,17 @@ namespace Identity.Web.Pages.Account.Register;
 [AllowAnonymous]
 public class Index : PageModel
 {
-    private readonly SignInManager<ApplicationUser> signInManager;
-    private readonly UserManager<ApplicationUser> userManager;
-    private readonly IEventSink eventSink;
+    private readonly IEventSink _eventSink;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
 
-    public Index(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEventSink eventSink)
+    public Index(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
+        IEventSink eventSink)
     {
-        this.userManager = userManager;
-        this.signInManager = signInManager;
-        this.eventSink = eventSink;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _eventSink = eventSink;
     }
 
     [BindProperty] public InputModel Input { get; set; }
@@ -38,23 +39,21 @@ public class Index : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid) return Page();
+        var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
+        var result = await _userManager.CreateAsync(user, Input.Password);
+        if (result.Succeeded)
         {
-            var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
-            var result = await userManager.CreateAsync(user, Input.Password);
-            if (result.Succeeded)
-            {
-                await signInManager.SignInAsync(user, false);
-                
-                var userRegisteredEvent = new UserRegistered(new Guid(user.Id), user.Email, DateTime.UtcNow);
-                
-                this.eventSink.Send(userRegisteredEvent);
+            await _signInManager.SignInAsync(user, false);
 
-                return Redirect(Input.ReturnUrl ?? "/");
-            }
+            var userRegisteredEvent = new UserRegistered(new Guid(user.Id), user.Email, DateTime.UtcNow);
 
-            foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+            _eventSink.Send(userRegisteredEvent);
+
+            return Redirect(Input.ReturnUrl ?? "/");
         }
+
+        foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
 
         return Page();
     }

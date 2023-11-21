@@ -1,9 +1,8 @@
 using Domain.Common;
 
-namespace Domain.Factories
+namespace Domain.Factories;
+
+public interface IFactory<out TEntity> where TEntity : IAggregateRoot
 {
-    public interface IFactory<out TEntity> where TEntity : IAggregateRoot
-    {
-        TEntity Build();
-    }
+    TEntity Build();
 }

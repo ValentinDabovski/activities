@@ -1,36 +1,37 @@
-using MediatR;
-using Persistence;
-using Microsoft.EntityFrameworkCore;
-using Application.Models;
 using Application.Common;
+using Application.Models;
 using AutoMapper;
-using Domain.Models;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Persistence;
+using Persistence.Models;
 
-namespace Application.Activities
+namespace Application.Activities;
+
+public class List
 {
-    public class List
+    public class Query : IRequest<Result<List<ActivityDto>>>
     {
-        public class Query : IRequest<Result<List<ActivityDto>>> { }
+    }
 
-        private class Handler : IRequestHandler<Query, Result<List<ActivityDto>>>
+    private class Handler : IRequestHandler<Query, Result<List<ActivityDto>>>
+    {
+        private readonly DataContext _dataContext;
+
+        private readonly IMapper _mapper;
+
+        public Handler(DataContext dataContext, IMapper mapper)
         {
-            private readonly DataContext dataContext;
+            _dataContext = dataContext;
+            _mapper = mapper;
+        }
 
-            private readonly IMapper mapper;
+        public async Task<Result<List<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
+        {
+            var activities = await _dataContext.Activities.ToListAsync(cancellationToken);
 
-            public Handler(DataContext dataContext, IMapper mapper)
-            {
-                this.dataContext = dataContext;
-                this.mapper = mapper;
-            }
-
-            public async Task<Result<List<ActivityDto>>> Handle(Query request, CancellationToken cancellationToken)
-            {
-                var activities = await this.dataContext.Activities.ToListAsync(cancellationToken);
-
-                return Result<List<ActivityDto>>
-                    .SuccessWith(this.mapper.Map<List<Activity>, List<ActivityDto>>(activities));
-            }
+            return Result<List<ActivityDto>>
+                .SuccessWith(_mapper.Map<List<ActivityEntity>, List<ActivityDto>>(activities));
         }
     }
 }

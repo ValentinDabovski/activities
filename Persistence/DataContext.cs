@@ -1,37 +1,21 @@
-using Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Models;
+using Persistence.Properties;
 
-namespace Persistence
+namespace Persistence;
+
+public class DataContext : DbContext
 {
-    public class DataContext : DbContext
+    public DataContext(DbContextOptions options) : base(options)
     {
-        public DataContext(DbContextOptions options) : base(options)
-        {
-        }
+    }
 
-        public DbSet<Activity> Activities { get; set; }
+    public DbSet<ActivityEntity> Activities { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            builder.Entity<Activity>()
-            .OwnsOne(activity => activity.Address,
-                address =>
-                {
-                    address.WithOwner();
-                    address.Property(a => a.City).IsRequired();
-                }
-            );
+    public DbSet<UserEntity> Users { get; set; }
 
-            builder.Entity<Activity>()
-            .OwnsOne(activity => activity.Category,
-                category =>
-                {
-                    category.WithOwner();
-                    category.Property(c => c.Name).IsRequired();
-                }
-            );
-
-            base.OnModelCreating(builder);
-        }
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.ApplyConfigurationsFromAssembly(typeof(ActivityEntityConfiguration).Assembly);
     }
 }

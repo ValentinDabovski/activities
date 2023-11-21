@@ -5,66 +5,63 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace SyncWorker.UserSync;
-public class SyncUsers :ISync
+
+public class SyncUsers : ISync
 {
-    private readonly IModel? channel;
-    private readonly ILogger<SyncUsers> logger;
-    private readonly Dictionary<string, IHandleEvents> eventHandlers;
+    private readonly IModel? _channel;
+    private readonly Dictionary<string, IHandleEvents> _eventHandlers;
+    private readonly ILogger<SyncUsers> _logger;
 
     public SyncUsers(ILogger<SyncUsers> logger, IEnumerable<IHandleEvents> eventHandlers, IConnection connection)
     {
-        this.eventHandlers = eventHandlers.ToDictionary(handler => handler.EventType);
-        this.logger = logger;
-        this.channel = connection.CreateModel();
+        _eventHandlers = eventHandlers.ToDictionary(handler => handler.EventType);
+        _logger = logger;
+        _channel = connection.CreateModel();
     }
-    
+
     public async Task Sync(CancellationToken cancellationToken = default)
     {
-        channel!.QueueDeclare(queue: "SSO",
-            durable: false,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null);
-        
-        var consumer = new AsyncEventingBasicConsumer(channel);
-        
-        consumer.Received += async (model, ea)  =>
+        _channel!.QueueDeclare("SSO",
+            false,
+            false,
+            false,
+            null);
+
+        var consumer = new AsyncEventingBasicConsumer(_channel);
+
+        consumer.Received += async (model, ea) =>
         {
-            logger.LogInformation("event received");
-            logger.LogInformation("processing...");
-                
+            _logger.LogInformation("event received");
+            _logger.LogInformation("processing...");
+
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
             var @event = JsonConvert.DeserializeObject<Event>(message);
-            
-            logger.LogInformation(@event.Type);
 
-            await this.HandleEvent(@event);
+            _logger.LogInformation("{EventType}", @event.Type);
+
+            await HandleEvent(@event);
         };
-        
-        var consumerTag = channel.BasicConsume(queue: "SSO",
-            autoAck: true,
-            consumer: consumer);
-        
+
+        var consumerTag = _channel.BasicConsume("SSO",
+            true,
+            consumer);
+
         var completionSource = new TaskCompletionSource<bool>();
         cancellationToken.Register(() =>
         {
-            channel.BasicCancel(consumerTag);
+            _channel.BasicCancel(consumerTag);
             completionSource.TrySetResult(true);
         });
-        
+
         await completionSource.Task;
     }
 
     private async Task HandleEvent(Event @event)
     {
-        if (eventHandlers.TryGetValue(@event.Type, out var handler))
-        {
+        if (_eventHandlers.TryGetValue(@event.Type, out var handler))
             await handler.Handle(JObject.FromObject(@event.Data));
-        }
         else
-        {
-            logger.LogInformation("Handler not found.");
-        }
+            _logger.LogInformation("Handler not found");
     }
 }

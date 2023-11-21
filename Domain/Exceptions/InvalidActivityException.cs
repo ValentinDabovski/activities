@@ -1,10 +1,13 @@
-namespace Domain.Exceptions
+namespace Domain.Exceptions;
+
+public class InvalidActivityException : BaseDomainException
 {
-    public class InvalidActivityException : BaseDomainException
+    public InvalidActivityException()
     {
-        public InvalidActivityException() { }
+    }
 
-        public InvalidActivityException(string error) => this.Error = error;
-
+    public InvalidActivityException(string error)
+    {
+        Error = error;
     }
 }

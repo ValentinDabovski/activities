@@ -1,38 +1,38 @@
+using Application.Common;
+using Application.Models;
+using AutoMapper;
 using MediatR;
 using Persistence;
-using Application.Models;
-using Application.Common;
-using AutoMapper;
-using Domain.Models;
+using Persistence.Models;
 
-namespace Application.Activities
+namespace Application.Activities;
+
+public abstract class Details
 {
-    public class Details
+    public class Query : IRequest<Result<ActivityDto>>
     {
-        public class Query : IRequest<Result<ActivityDto>>
+        public Guid Id { get; init; }
+    }
+
+    private class Handler : IRequestHandler<Query, Result<ActivityDto>>
+    {
+        private readonly DataContext _dataContext;
+        private readonly IMapper _mapper;
+
+        public Handler(DataContext dataContext, IMapper mapper)
         {
-            public Guid Id { get; set; }
+            _dataContext = dataContext;
+            _mapper = mapper;
         }
 
-        private class Handler : IRequestHandler<Query, Result<ActivityDto>>
+        public async Task<Result<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            private readonly DataContext dataContext;
-            private readonly IMapper mapper;
+            var activity = await _dataContext.Activities.FindAsync(request.Id, cancellationToken);
 
-            public Handler(DataContext dataContext, IMapper mapper)
-            {
-                this.dataContext = dataContext;
-                this.mapper = mapper;
-            }
-            public async Task<Result<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)
-            {
-                var activity = await this.dataContext.Activities.FindAsync(request.Id, cancellationToken);
+            if (activity == null) return Result<ActivityDto>.Failure(new List<string> { "Activity not found." });
 
-                if (activity == null) return Result<ActivityDto>.Failure(new List<string> { "Activity not found." });
-
-                return Result<ActivityDto>
-                    .SuccessWith(this.mapper.Map<Activity, ActivityDto>(activity));
-            }
+            return Result<ActivityDto>
+                .SuccessWith(_mapper.Map<ActivityEntity, ActivityDto>(activity));
         }
     }
 }

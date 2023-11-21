@@ -2,33 +2,35 @@ using Application.Common;
 using MediatR;
 using Persistence;
 
-namespace Application.Activities
+namespace Application.Activities;
+
+public abstract class Delete
 {
-    public class Delete
+    public class Command : IRequest<Result>
     {
-        public class Command : IRequest<Result>
+        public Guid Id { get; init; }
+    }
+
+    private class Handler : IRequestHandler<Command, Result>
+    {
+        private readonly DataContext _dataContext;
+
+        public Handler(DataContext dataContext)
         {
-            public Guid Id { get; set; }
+            _dataContext = dataContext;
         }
 
-        private class Handler : IRequestHandler<Command, Result>
+        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            private readonly DataContext dataContext;
+            var activity = await _dataContext.Activities.FindAsync(request.Id, cancellationToken);
 
-            public Handler(DataContext dataContext) => this.dataContext = dataContext;
+            if (activity == null) return Result.Failure(new List<string> { "Activity not found." });
 
-            public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
-            {
-                var activity = await this.dataContext.Activities.FindAsync(request.Id, cancellationToken);
+            _dataContext.Activities.Remove(activity);
 
-                if (activity == null) return Result.Failure(new List<string> { "Activity not found." });
+            await _dataContext.SaveChangesAsync(cancellationToken);
 
-                this.dataContext.Activities.Remove(activity);
-
-                await this.dataContext.SaveChangesAsync(cancellationToken);
-
-                return Result.Success;
-            }
+            return Result.Success;
         }
     }
 }
