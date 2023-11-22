@@ -19,7 +19,7 @@ public class SyncUsers : ISync
         _channel = connection.CreateModel();
     }
 
-    public async Task Sync(CancellationToken cancellationToken = default)
+    public Task Sync(CancellationToken cancellationToken = default)
     {
         _channel!.QueueDeclare("SSO",
             false,
@@ -27,7 +27,7 @@ public class SyncUsers : ISync
             false,
             null);
 
-        var consumer = new AsyncEventingBasicConsumer(_channel);
+        var consumer = new EventingBasicConsumer(_channel);
 
         consumer.Received += async (model, ea) =>
         {
@@ -43,18 +43,9 @@ public class SyncUsers : ISync
             await HandleEvent(@event);
         };
 
-        var consumerTag = _channel.BasicConsume("SSO",
-            true,
-            consumer);
+        _channel.BasicConsume("SSO", true, consumer);
 
-        var completionSource = new TaskCompletionSource<bool>();
-        cancellationToken.Register(() =>
-        {
-            _channel.BasicCancel(consumerTag);
-            completionSource.TrySetResult(true);
-        });
-
-        await completionSource.Task;
+        return Task.CompletedTask;
     }
 
     private async Task HandleEvent(Event @event)

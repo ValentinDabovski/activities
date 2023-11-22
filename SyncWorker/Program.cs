@@ -10,13 +10,13 @@ var host = Host.CreateDefaultBuilder(args)
     {
         services.AddHostedService<Worker>();
 
-        services.AddTransient<IConnection>(sp =>
+        services.AddSingleton<IConnection>(sp =>
         {
             var factory = new ConnectionFactory { HostName = "localhost" };
             return factory.CreateConnection();
         });
 
-        services.AddDbContext<DataContext>(opt => { opt.UseSqlite("Data Source=activities.db"); });
+        services.AddDbContext<DataContext>(opt => { opt.UseSqlite("Data Source=../Persistence/activities.db"); });
 
         services.AddSingleton<ISync, SyncUsers>();
         services.AddTransient<IHandleEvents, UserRegisteredEventHandler>();
