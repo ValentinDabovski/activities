@@ -29,7 +29,7 @@ public static class ApplicationServices
 
         services.AddMediatR(typeof(List));
 
-        services.AddAutoMapper(typeof(MappingProfile).Assembly);
+        services.AddAutoMapper(typeof(MappingProfile));
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<Create>();
     }

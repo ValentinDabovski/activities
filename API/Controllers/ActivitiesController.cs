@@ -1,5 +1,5 @@
 using Application.Activities;
-using Application.Models;
+using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,17 +23,17 @@ public class ActivitiesController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(ActivityDto activityDto)
+    public async Task<IActionResult> Create(Activity activity)
     {
         return HandleResult(
-            await Mediator.Send(new Create.Command { ActivityDto = activityDto }));
+            await Mediator.Send(new Create.Command { Activity = activity }));
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Edit(Guid id, ActivityDto activityDto)
+    public async Task<IActionResult> Edit(Guid id, Activity activityDto)
     {
         return HandleResult(
-            await Mediator.Send(new Edit.Command { ActivityDto = activityDto, AcivityId = id }));
+            await Mediator.Send(new Edit.Command { Activity = activityDto, AcivityId = id }));
     }
 
     [HttpDelete("{id}")]

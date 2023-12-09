@@ -1,5 +1,4 @@
 using Application.Common;
-using Application.Models;
 using Domain.Factories.Activities;
 using Domain.Models;
 using FluentValidation;
@@ -13,14 +12,14 @@ public abstract class Create
 {
     public class Command : IRequest<Result>
     {
-        public ActivityDto ActivityDto { get; init; }
+        public Activity Activity { get; init; }
     }
 
     public class CommandValidator : AbstractValidator<Command>
     {
         public CommandValidator()
         {
-            RuleFor(x => x.ActivityDto).SetValidator(new ActivityValidator());
+            RuleFor(x => x.Activity).SetValidator(new ActivityValidator());
         }
     }
 
@@ -36,21 +35,21 @@ public abstract class Create
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var activity = new ActivityFactory()
-                .WithTitle(request.ActivityDto.Title)
-                .WithDescription(request.ActivityDto.Description)
-                .WithDate(request.ActivityDto.Date)
+                .WithTitle(request.Activity.Title)
+                .WithDescription(request.Activity.Description)
+                .WithDate(request.Activity.Date)
                 .WithCategory(
                     new Category(
-                        request.ActivityDto.Category.Name,
-                        request.ActivityDto.Category.Description))
+                        request.Activity.Category.Name,
+                        request.Activity.Category.Description))
                 .WithAddress(
                     new Address(
-                        request.ActivityDto.Address.Street,
-                        request.ActivityDto.Address.City,
-                        request.ActivityDto.Address.State,
-                        request.ActivityDto.Address.Country,
-                        request.ActivityDto.Address.ZipCode,
-                        request.ActivityDto.Address.Venue))
+                        request.Activity.Address.Street,
+                        request.Activity.Address.City,
+                        request.Activity.Address.State,
+                        request.Activity.Address.Country,
+                        request.Activity.Address.ZipCode,
+                        request.Activity.Address.Venue))
                 .Build();
 
             await _dataContext.Activities.AddAsync(new ActivityEntity
