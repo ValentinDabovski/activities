@@ -14,28 +14,28 @@ public static class Config
     public static IEnumerable<ApiScope> ApiScopes =>
         new[]
         {
-            new ApiScope("activities-api")
+            new ApiScope("activities.read", "Reads  activities."),
+            new ApiScope("activities.write", "Create  activities."),
+            new ApiScope("manage", "Provides administrative access.")
         };
+
+    public static IEnumerable<ApiResource> ApiResources =>
+        new[]
+        {
+            new ApiResource("activities", "Activities API")
+            {
+                Scopes = { "activities.read", "activities.write", "manage" }
+            }
+        };
+
 
     public static IEnumerable<Client> Clients =>
         new[]
         {
-            // m2m client credentials flow client
-            new()
-            {
-                ClientId = "m2m.client",
-                ClientName = "Client Credentials Client",
-
-                AllowedGrantTypes = GrantTypes.ClientCredentials,
-                ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
-
-                AllowedScopes = { "api1" }
-            },
-
             // interactive client using code flow + pkce
             new Client
             {
-                ClientId = "ActivitiesApi",
+                ClientId = "Activities_ClientApp",
                 ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
 
                 AllowedGrantTypes = GrantTypes.Code,
@@ -46,6 +46,15 @@ public static class Config
 
                 AllowOfflineAccess = true,
                 AllowedScopes = { "openid", "profile", "activities-api" }
+            },
+
+            new Client
+            {
+                ClientId = "Activities_Api",
+                ClientName = "Activities Api",
+                ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
+                AllowedGrantTypes = GrantTypes.ClientCredentials,
+                AllowedScopes = { "activities.read", "activities.write", "manage" }
             }
         };
 }

@@ -23,15 +23,16 @@ try
 
     builder.Services.AddRazorPages();
 
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    var sqlLiteConnString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-    builder.ConfigureIdentityServer();
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlite(sqlLiteConnString));
+
+    builder.ConfigureIdentityServer(sqlLiteConnString);
 
     builder.Services.AddScoped<IEventSink, EventDispatcher>();
 
     var app = builder.Build();
-
 
     app.UseSerilogRequestLogging();
 
@@ -45,10 +46,15 @@ try
     app.MapRazorPages()
         .RequireAuthorization();
 
+
+    await Seed.WipeConfigurationDb(app);
+    await Task.WhenAll(Seed.SeedClients(app), Seed.SeedApiScopes(app), Seed.SeedIdentityResources(app),
+        Seed.SeedApiResources(app));
+
     app.Run();
 }
 catch (Exception ex) when
-    (ex.GetType().Name is not "StopTheHostException") // https://github.com/dotnet/runtime/issues/60600
+    (ex.GetType().Name is not "HostAbortedException") // https://github.com/dotnet/runtime/issues/60600
 {
     Log.Fatal(ex, "Unhandled exception");
 }

@@ -7,14 +7,14 @@ namespace Identity.Web;
 
 internal static class IdentityServerConfiguration
 {
-    public static WebApplicationBuilder ConfigureIdentityServer(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder ConfigureIdentityServer(this WebApplicationBuilder builder,
+        string connectionString)
     {
         builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
         var migrationsAssembly = typeof(Program).Assembly.GetName().Name;
-        const string connectionString = @"Data Source=AspIdUsers.db";
 
         builder.Services
             .AddIdentityServer(options =>

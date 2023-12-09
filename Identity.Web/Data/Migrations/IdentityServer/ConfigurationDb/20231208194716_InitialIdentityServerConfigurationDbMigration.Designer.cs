@@ -11,13 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Identity.Web.Data.Migrations.IdentityServer.ConfigurationDb
 {
     [DbContext(typeof(ConfigurationDbContext))]
-    [Migration("20230324205005_InitialIdentityServerConfigurationDbMigration")]
+    [Migration("20231208194716_InitialIdentityServerConfigurationDbMigration")]
     partial class InitialIdentityServerConfigurationDbMigration
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.15");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
             modelBuilder.Entity("Duende.IdentityServer.EntityFramework.Entities.ApiResource", b =>
                 {
@@ -354,6 +355,12 @@ namespace Identity.Web.Data.Migrations.IdentityServer.ConfigurationDb
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
+                    b.Property<TimeSpan>("DPoPClockSkew")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DPoPValidationMode")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("TEXT");
@@ -379,6 +386,10 @@ namespace Identity.Web.Data.Migrations.IdentityServer.ConfigurationDb
 
                     b.Property<bool>("IncludeJwtId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("InitiateLoginUri")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("LastAccessed")
                         .HasColumnType("TEXT");
@@ -412,6 +423,9 @@ namespace Identity.Web.Data.Migrations.IdentityServer.ConfigurationDb
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("RequireConsent")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("RequireDPoP")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("RequirePkce")
