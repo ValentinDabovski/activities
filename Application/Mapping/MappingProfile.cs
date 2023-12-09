@@ -1,32 +1,20 @@
-using System.Reflection;
 using AutoMapper;
+using Domain.Models;
+using Persistence.Models;
 
-namespace Application.Mapping
+namespace Application.Mapping;
+
+public class MappingProfile : Profile
 {
-    public class MappingProfile : Profile
+    public MappingProfile()
     {
-        public MappingProfile() => this.ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
+        CreateMap<Activity, ActivityEntity>();
+        CreateMap<ActivityEntity, Activity>();
 
-        private void ApplyMappingsFromAssembly(Assembly assembly)
-        {
-            var types = assembly
-                .GetExportedTypes()
-                .Where(t => t
-                    .GetInterfaces()
-                    .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMapFrom<>)))
-                .ToList();
+        CreateMap<AddressEntity, Address>();
+        CreateMap<Address, AddressEntity>();
 
-            foreach (var type in types)
-            {
-                var instance = Activator.CreateInstance(type);
-
-                const string mappingMethodName = "Mapping";
-
-                var methodInfo = type.GetMethod(mappingMethodName)
-                                 ?? type.GetInterface("IMapFrom`1")?.GetMethod(mappingMethodName);
-
-                methodInfo?.Invoke(instance, new object[] { this });
-            }
-        }
+        CreateMap<CategoryEntity, Category>();
+        CreateMap<Category, CategoryEntity>();
     }
 }

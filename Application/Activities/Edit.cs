@@ -1,5 +1,4 @@
 using Application.Common;
-using Application.Models;
 using AutoMapper;
 using Domain.Factories.Activities;
 using Domain.Models;
@@ -14,7 +13,7 @@ public abstract class Edit
 {
     public class Command : IRequest<Result>
     {
-        public ActivityDto ActivityDto { get; init; }
+        public Activity Activity { get; init; }
 
         public Guid AcivityId { get; init; }
     }
@@ -23,7 +22,7 @@ public abstract class Edit
     {
         public CommandValidator()
         {
-            RuleFor(x => x.ActivityDto).SetValidator(new ActivityValidator());
+            RuleFor(x => x.Activity).SetValidator(new ActivityValidator());
         }
     }
 
@@ -57,21 +56,21 @@ public abstract class Edit
                     activityEntity.Address.Venue))
                 .Build();
 
-            activity.UpdateTitle(request.ActivityDto.Title);
-            activity.UpdateDescription(request.ActivityDto.Description);
-            activity.UpdateDate(request.ActivityDto.Date);
+            activity.UpdateTitle(request.Activity.Title);
+            activity.UpdateDescription(request.Activity.Description);
+            activity.UpdateDate(request.Activity.Date);
             activity.UpdateCategory(
                 new Category(
-                    request.ActivityDto.Category.Name,
-                    request.ActivityDto.Description));
+                    request.Activity.Category.Name,
+                    request.Activity.Description));
             activity.UpdateAddress(
                 new Address(
-                    request.ActivityDto.Address.Street,
-                    request.ActivityDto.Address.City,
-                    request.ActivityDto.Address.State,
-                    request.ActivityDto.Address.Country,
-                    request.ActivityDto.Address.ZipCode,
-                    request.ActivityDto.Address.Venue
+                    request.Activity.Address.Street,
+                    request.Activity.Address.City,
+                    request.Activity.Address.State,
+                    request.Activity.Address.Country,
+                    request.Activity.Address.ZipCode,
+                    request.Activity.Address.Venue
                 ));
 
             activityEntity.Title = activity.Title;

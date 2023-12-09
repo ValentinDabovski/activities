@@ -1,5 +1,5 @@
+using System.Diagnostics;
 using Application.Common;
-using Application.Models;
 using AutoMapper;
 using MediatR;
 using Persistence;
@@ -9,12 +9,12 @@ namespace Application.Activities;
 
 public abstract class Details
 {
-    public class Query : IRequest<Result<ActivityDto>>
+    public class Query : IRequest<Result<Activity>>
     {
         public Guid Id { get; init; }
     }
 
-    private class Handler : IRequestHandler<Query, Result<ActivityDto>>
+    private class Handler : IRequestHandler<Query, Result<Activity>>
     {
         private readonly DataContext _dataContext;
         private readonly IMapper _mapper;
@@ -25,14 +25,14 @@ public abstract class Details
             _mapper = mapper;
         }
 
-        public async Task<Result<ActivityDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<Activity>> Handle(Query request, CancellationToken cancellationToken)
         {
             var activity = await _dataContext.Activities.FindAsync(request.Id, cancellationToken);
 
-            if (activity == null) return Result<ActivityDto>.Failure(new List<string> { "Activity not found." });
+            if (activity == null) return Result<Activity>.Failure(new List<string> { "Activity not found." });
 
-            return Result<ActivityDto>
-                .SuccessWith(_mapper.Map<ActivityEntity, ActivityDto>(activity));
+            return Result<Activity>
+                .SuccessWith(_mapper.Map<ActivityEntity, Activity>(activity));
         }
     }
 }
