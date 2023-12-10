@@ -36,16 +36,16 @@ public static class Config
             new Client
             {
                 ClientId = "Activities_ClientApp",
-                ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
-
+                ClientName = "Activities Client App",
                 AllowedGrantTypes = GrantTypes.Code,
 
-                RedirectUris = { "https://localhost:5001/signin-oidc" },
-                FrontChannelLogoutUri = "https://localhost:5001/signout-oidc",
-                PostLogoutRedirectUris = { "https://localhost:5001/signout-callback-oidc" },
+                RedirectUris = { "http://localhost:3000/signin-oidc" },
+                FrontChannelLogoutUri = "http://localhost:3000/signout-oidc",
+                PostLogoutRedirectUris = { "http://localhost:3000/signout-callback-oidc" },
 
                 AllowOfflineAccess = true,
-                AllowedScopes = { "openid", "profile", "activities-api" }
+                RequireClientSecret = false,
+                AllowedScopes = { "openid", "profile", "activities.read", "activities.write", "manage" }
             },
 
             new Client

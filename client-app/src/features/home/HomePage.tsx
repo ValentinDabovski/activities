@@ -1,7 +1,8 @@
+import { observer } from "mobx-react-lite";
 import { Link } from "react-router-dom";
 import { Container, Header, Segment, Image, Button } from "semantic-ui-react";
 
-export default function HomePage() {
+function HomePage() {
     return (
         <Segment inverted textAlign="center" vertical className="masthead">
             <Container text>
@@ -14,4 +15,6 @@ export default function HomePage() {
             </Container>
         </Segment>
     )
-}  
+}
+
+export default observer(HomePage);

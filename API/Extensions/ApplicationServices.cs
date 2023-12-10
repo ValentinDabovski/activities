@@ -19,7 +19,7 @@ public static class ApplicationServices
         services.AddCors(opt =>
         {
             opt.AddPolicy("CorsPolicy",
-                p => { p.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000"); });
+                p => { p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
         });
 
         services.AddDbContext<DataContext>(opt =>

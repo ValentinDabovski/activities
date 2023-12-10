@@ -32,6 +32,11 @@ try
 
     builder.Services.AddScoped<IEventSink, EventDispatcher>();
 
+    builder.Services.AddCors(opt =>
+    {
+        opt.AddPolicy("default", policy => { policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
+    });
+
     var app = builder.Build();
 
     app.UseSerilogRequestLogging();
@@ -40,6 +45,7 @@ try
 
     app.UseStaticFiles();
     app.UseRouting();
+    app.UseCors("default");
     app.UseIdentityServer();
     app.UseAuthorization();
 

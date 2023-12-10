@@ -7,13 +7,28 @@ import reportWebVitals from './reportWebVitals';
 import { StoreContext, store } from './app/stores/store';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './app/router/Routes';
+import { WebStorageStateStore } from 'oidc-client-ts';
+import { AuthProvider } from 'react-oidc-context';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+const oidcConfig = {
+    authority: 'https://localhost:5002',
+    client_id: 'Activities_ClientApp',
+    redirect_uri: 'http://localhost:3000/signin-oidc',
+    response_type: 'code',
+    scope: 'openid profile activities.read activities.write manage',
+    post_logout_redirect_uri: 'http://localhost:3000/signout-callback-oidc"',
+    userStore: new WebStorageStateStore({ store: window.localStorage })
+}
 root.render(
   <StoreContext.Provider value={store}>
-    <RouterProvider router={router} />
+      <AuthProvider {...oidcConfig}>
+          <RouterProvider router={router} />
+      </AuthProvider>
+    
   </StoreContext.Provider>
 );
 

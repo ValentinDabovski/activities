@@ -4,11 +4,16 @@ import HomePage from "../../features/home/HomePage";
 import ActivityDashboard from "../../features/activities/dashboard/ActivityDashboard";
 import ActivityForm from "../../features/activities/form/ActivityForm";
 import ActivityDetails from "../../features/activities/details/ActivityDetails";
+import SignInCallback from "../../features/identity/SignInCallback";
 
 export const routes: RouteObject[] = [
     {
         path: '',
         element: <HomePage />
+    },
+    {
+        path: '/signin-oidc',
+        element: <SignInCallback />
     },
     {
         path: '/',

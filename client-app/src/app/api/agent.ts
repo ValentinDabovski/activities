@@ -1,9 +1,15 @@
 import axios, { AxiosResponse } from "axios";
 import { Activity } from "../models/activity";
+import  {userManager}  from "../identity/userManagerStore";
+
 
 axios.defaults.baseURL = 'https://localhost:5001/api'
 
-
+userManager.getUser().then(user => {
+    if(user) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${user.access_token}`
+    }
+})
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 
 const requests = {

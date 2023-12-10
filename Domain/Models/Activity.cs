@@ -22,7 +22,7 @@ public class Activity : IAggregateRoot
         Address = address;
     }
 
-    private Activity()
+    public Activity()
     {
     }
 
