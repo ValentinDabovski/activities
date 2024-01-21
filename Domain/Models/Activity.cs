@@ -3,7 +3,7 @@ using Domain.Exceptions;
 
 namespace Domain.Models;
 
-public class Activity : IAggregateRoot
+public class Activity : Entity, IAggregateRoot
 {
     internal Activity(string title, string description, bool isAvailable, DateTime date, Address address,
         Category category)
@@ -13,7 +13,6 @@ public class Activity : IAggregateRoot
         ValidateAgainstEmptyString(address.City, nameof(address.City));
         ValidateAgainstEmptyString(category.Name, nameof(category.Name));
 
-        Id = Guid.NewGuid();
         Title = title;
         Description = description;
         IsAvailable = isAvailable;
@@ -22,17 +21,17 @@ public class Activity : IAggregateRoot
         Address = address;
     }
 
-    public Activity()
+    private Activity()
     {
     }
 
-    public Guid Id { get; private set; }
     public string Title { get; private set; }
     public DateTime Date { get; private set; }
     public bool IsAvailable { get; private set; }
     public string Description { get; private set; }
     public Category Category { get; private set; }
     public Address Address { get; private set; }
+    public Guid? UserId { get; private set; } = null;
 
     public Activity UpdateDate(DateTime newDate)
     {
@@ -55,16 +54,17 @@ public class Activity : IAggregateRoot
         return this;
     }
 
-    public Activity UpdateCategory(Category newCategory)
+    public Activity UpdateCategory(string name, string description)
     {
-        Category = newCategory;
+        Category = new Category(name, description);
 
         return this;
     }
 
-    public Activity UpdateAddress(Address newAddress)
+    public Activity UpdateAddress(string street, string city, string state, string country, string zipcode,
+        string venue)
     {
-        Address = newAddress;
+        Address = new Address(street, city, state, country, zipcode, venue);
 
         return this;
     }
@@ -72,7 +72,6 @@ public class Activity : IAggregateRoot
     public Activity ChangeAvailability()
     {
         IsAvailable = !IsAvailable;
-
         return this;
     }
 

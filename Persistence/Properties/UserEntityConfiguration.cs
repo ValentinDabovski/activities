@@ -1,18 +1,17 @@
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Persistence.Models;
 
 namespace Persistence.Properties;
 
-public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
+public class UserEntityConfiguration : IEntityTypeConfiguration<User>
 {
-    public void Configure(EntityTypeBuilder<UserEntity> builder)
+    public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.Property(p => p.Id)
             .IsRequired();
 
-        builder
-            .HasMany(u => u.Activities)
+        builder.HasMany<Activity>("Activities")
             .WithOne()
             .HasForeignKey(a => a.UserId);
     }

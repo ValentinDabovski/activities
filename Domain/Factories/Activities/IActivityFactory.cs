@@ -7,6 +7,9 @@ public interface IActivityFactory : IFactory<Activity>
     IActivityFactory WithTitle(string title);
     IActivityFactory WithDescription(string title);
     IActivityFactory WithDate(DateTime date);
-    IActivityFactory WithAddress(Address address);
-    IActivityFactory WithCategory(Category category);
+
+    IActivityFactory WithAddress(string street, string city, string state, string country, string zipcode,
+        string venue);
+
+    IActivityFactory WithCategory(string name, string description);
 }

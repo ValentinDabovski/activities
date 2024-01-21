@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Domain.Exceptions;
 
 namespace Domain.Common;
@@ -28,6 +29,16 @@ public static class Guard
         if (!actualValue.Equals(unexpectedValue)) return;
 
         ThrowException<TException>($"{name} must not be {unexpectedValue}.");
+    }
+
+    public static void ForValidEmail<TException>(string value, string name = "Value")
+        where TException : BaseDomainException, new()
+    {
+        var emailValidation = new EmailAddressAttribute();
+
+        if (emailValidation.IsValid(value)) return;
+
+        ThrowException<TException>($"{name} must be valid email address.");
     }
 
     private static void ThrowException<TException>(string message)

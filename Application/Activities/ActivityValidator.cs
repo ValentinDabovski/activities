@@ -1,9 +1,9 @@
-using Domain.Models;
+using Application.Models;
 using FluentValidation;
 
 namespace Application.Activities;
 
-public class ActivityValidator : AbstractValidator<Activity>
+public class ActivityValidator : AbstractValidator<ActivityDto>
 {
     public ActivityValidator()
     {

@@ -1,6 +1,6 @@
+using Domain.Factories.Users;
 using Newtonsoft.Json.Linq;
 using Persistence;
-using Persistence.Models;
 using SyncWorker.UserSync.Events;
 
 namespace SyncWorker.UserSync.EventHandlers;
@@ -8,10 +8,12 @@ namespace SyncWorker.UserSync.EventHandlers;
 public class UserRegisteredEventHandler : IHandleEvents
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly UserFactory _userFactory;
 
     public UserRegisteredEventHandler(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _userFactory = new UserFactory();
     }
 
     public string EventType => "UserRegistered";
@@ -24,12 +26,12 @@ public class UserRegisteredEventHandler : IHandleEvents
 
         if (data != null)
         {
-            var user = dbContext.Users.Add(new UserEntity
-            {
-                Email = data.Email,
-                Id = data.Id
-            });
+            var user = _userFactory
+                .WithEmail(data.Email)
+                .WithId(data.Id)
+                .Build();
 
+            await dbContext.Users.AddAsync(user);
             await dbContext.SaveChangesAsync();
         }
     }

@@ -1,5 +1,4 @@
 using Application.Activities;
-using Application.Mapping;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -29,7 +28,6 @@ public static class ApplicationServices
 
         services.AddMediatR(typeof(List));
 
-        services.AddAutoMapper(typeof(MappingProfile));
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<Create>();
     }

@@ -11,7 +11,6 @@ public class ActivityFactory : IActivityFactory
     private string _description;
     private string _title;
 
-
     public Activity Build()
     {
         return new Activity(
@@ -24,15 +23,16 @@ public class ActivityFactory : IActivityFactory
         );
     }
 
-    public IActivityFactory WithAddress(Address address)
+    public IActivityFactory WithAddress(string street, string city, string state, string country, string zipcode,
+        string venue)
     {
-        _address = address;
+        _address = new Address(street, city, state, country, zipcode, venue);
         return this;
     }
 
-    public IActivityFactory WithCategory(Category category)
+    public IActivityFactory WithCategory(string name, string description)
     {
-        _category = category;
+        _category = new Category(name, description);
         return this;
     }
 

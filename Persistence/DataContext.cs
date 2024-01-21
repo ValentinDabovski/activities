@@ -1,18 +1,14 @@
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using Persistence.Models;
 using Persistence.Properties;
 
 namespace Persistence;
 
-public class DataContext : DbContext
+public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
 {
-    public DataContext(DbContextOptions options) : base(options)
-    {
-    }
+    public DbSet<Activity> Activities { get; init; }
 
-    public DbSet<ActivityEntity> Activities { get; set; }
-
-    public DbSet<UserEntity> Users { get; set; }
+    public DbSet<User> Users { get; init; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

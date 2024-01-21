@@ -3,9 +3,9 @@ using Domain.Exceptions;
 
 namespace Domain.Models;
 
-public record Category
+public class Category : ValueObject
 {
-    public Category(string name, string description)
+    internal Category(string name, string description)
     {
         ValidateAgainstEmptyString(name, nameof(name));
 
@@ -17,13 +17,17 @@ public record Category
     {
     }
 
-    public string Name { get; private set; }
-
-    public string Description { get; private set; }
-
+    public string Name { get; }
+    public string Description { get; }
 
     private void ValidateAgainstEmptyString(string stringForValidation, string paramName)
     {
         Guard.AgainstEmptyString<InvalidCategoryException>(stringForValidation, paramName);
+    }
+
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Name;
+        yield return Description;
     }
 }

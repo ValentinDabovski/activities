@@ -1,9 +1,7 @@
-using System.Diagnostics;
 using Application.Common;
-using AutoMapper;
+using Domain.Models;
 using MediatR;
 using Persistence;
-using Persistence.Models;
 
 namespace Application.Activities;
 
@@ -17,12 +15,10 @@ public abstract class Details
     private class Handler : IRequestHandler<Query, Result<Activity>>
     {
         private readonly DataContext _dataContext;
-        private readonly IMapper _mapper;
 
-        public Handler(DataContext dataContext, IMapper mapper)
+        public Handler(DataContext dataContext)
         {
             _dataContext = dataContext;
-            _mapper = mapper;
         }
 
         public async Task<Result<Activity>> Handle(Query request, CancellationToken cancellationToken)
@@ -32,7 +28,7 @@ public abstract class Details
             if (activity == null) return Result<Activity>.Failure(new List<string> { "Activity not found." });
 
             return Result<Activity>
-                .SuccessWith(_mapper.Map<ActivityEntity, Activity>(activity));
+                .SuccessWith(activity);
         }
     }
 }
