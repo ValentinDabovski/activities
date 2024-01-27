@@ -22,22 +22,17 @@ public abstract class Create
         }
     }
 
-    private class Handler : IRequestHandler<Command, Result>
+    private class Handler(DataContext dataContext) : IRequestHandler<Command, Result>
     {
-        private readonly DataContext _dataContext;
-
-        public Handler(DataContext dataContext)
-        {
-            _dataContext = dataContext;
-        }
-
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var activity = new ActivityFactory()
                 .WithTitle(request.Activity.Title)
                 .WithDescription(request.Activity.Description)
                 .WithDate(request.Activity.Date)
-                .WithCategory(request.Activity.Category.Name, request.Activity.Category.Description)
+                .WithCategory(
+                    request.Activity.Category.Name,
+                    request.Activity.Category.Description)
                 .WithAddress(
                     request.Activity.Address.Street,
                     request.Activity.Address.City,
@@ -47,9 +42,9 @@ public abstract class Create
                     request.Activity.Address.Venue)
                 .Build();
 
-            await _dataContext.Activities.AddAsync(activity, cancellationToken);
+            await dataContext.Activities.AddAsync(activity, cancellationToken);
 
-            await _dataContext.SaveChangesAsync(cancellationToken);
+            await dataContext.SaveChangesAsync(cancellationToken);
 
             return Result.Success;
         }

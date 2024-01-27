@@ -6,13 +6,11 @@ namespace API.Middleware;
 
 public class ExceptionMiddleware
 {
-    private readonly IHostEnvironment _env;
     private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly RequestDelegate _next;
 
-    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
-        _env = env;
         _logger = logger;
         _next = next;
     }

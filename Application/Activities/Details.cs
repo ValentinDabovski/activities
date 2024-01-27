@@ -12,18 +12,11 @@ public abstract class Details
         public Guid Id { get; init; }
     }
 
-    private class Handler : IRequestHandler<Query, Result<Activity>>
+    private class Handler(DataContext dataContext) : IRequestHandler<Query, Result<Activity>>
     {
-        private readonly DataContext _dataContext;
-
-        public Handler(DataContext dataContext)
-        {
-            _dataContext = dataContext;
-        }
-
         public async Task<Result<Activity>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var activity = await _dataContext.Activities.FindAsync(request.Id, cancellationToken);
+            var activity = await dataContext.Activities.FindAsync(request.Id, cancellationToken);
 
             if (activity == null) return Result<Activity>.Failure(new List<string> { "Activity not found." });
 

@@ -23,19 +23,11 @@ public abstract class Edit
         }
     }
 
-    private class Handler : IRequestHandler<Command, Result>
+    private class Handler(DataContext dataContext) : IRequestHandler<Command, Result>
     {
-        private readonly DataContext _dataContext;
-
-        public Handler(DataContext dataContext)
-        {
-            _dataContext = dataContext;
-        }
-
-
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var activity = await _dataContext.Activities.FindAsync(request.ActivityId, cancellationToken);
+            var activity = await dataContext.Activities.FindAsync(request.ActivityId, cancellationToken);
 
             if (activity == null) return Result.Failure(new List<string> { "Activity not found." });
 
@@ -54,9 +46,9 @@ public abstract class Edit
                 request.Activity.Address.Venue
             );
 
-            _dataContext.Activities.Update(activity);
+            dataContext.Activities.Update(activity);
 
-            await _dataContext.SaveChangesAsync(cancellationToken);
+            await dataContext.SaveChangesAsync(cancellationToken);
 
             return Result.Success;
         }

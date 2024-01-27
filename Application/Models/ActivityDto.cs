@@ -3,25 +3,25 @@ namespace Application.Models;
 public class ActivityDto
 {
     public Guid Id { get; set; }
-    public string Title { get; set; }
+    public required string Title { get; set; }
     public string Description { get; set; }
-    public DateTime Date { get; set; }
-    public CategoryDto Category { get; set; }
-    public AddressDto Address { get; set; }
+    public required DateTime Date { get; set; }
+    public required CategoryDto Category { get; set; }
+    public required AddressDto Address { get; set; }
 
     public class CategoryDto
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public required string Name { get; set; }
+        public required string Description { get; set; }
     }
 
     public class AddressDto
     {
-        public string Street { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
-        public string Country { get; set; }
-        public string ZipCode { get; set; }
-        public string Venue { get; set; }
+        public required string Street { get; set; }
+        public required string City { get; set; }
+        public required string State { get; set; }
+        public required string Country { get; set; }
+        public required string ZipCode { get; set; }
+        public required string Venue { get; set; }
     }
 }
