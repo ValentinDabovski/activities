@@ -1,5 +1,6 @@
 using API.Extensions;
 using API.Middleware;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,10 +35,15 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// seed data
-using var scope = app.Services.CreateScope();
-var services = scope.ServiceProvider;
-var context = services.GetRequiredService<DataContext>();
-await Seed.SeedData(context);
-
+// migrate and seed data
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<DataContext>();
+    
+    dbContext.Database.Migrate();
+    
+    var context = services.GetRequiredService<DataContext>();
+    await Seed.SeedData(context);
+}
 app.Run();

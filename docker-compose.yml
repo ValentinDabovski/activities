@@ -1,0 +1,67 @@
+﻿services:
+  
+  sqlserver:
+    container_name: sqlserver
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    environment:
+      MSSQL_SA_PASSWORD: "YourStrong@Passw0rd"
+      ACCEPT_EULA: 'Y'
+    ports:
+      - "1433:1433"
+    networks:
+      - activities-network
+    volumes:
+      - sql_data:/var/opt/mssql
+        
+  rabbitmq:
+    container_name: rabbitmq
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - activities-network
+  
+  api:
+    container_name: activities_api
+    image: api
+    build:
+      context: .
+      dockerfile: API/Dockerfile
+    ports:
+      - "5001:5001"
+    networks:
+      - activities-network
+    depends_on:
+      - sqlserver
+  
+  syncworker:
+    container_name: sync_worker
+    image: syncworker
+    build:
+      context: .
+      dockerfile: SyncWorker/Dockerfile
+    networks:
+      - activities-network
+    depends_on:
+      - sqlserver
+      - rabbitmq
+
+  identity.web:
+    container_name: identity
+    image: identity.web
+    build:
+      context: .
+      dockerfile: Identity.Web/Dockerfile
+    ports:
+      - "5002:5002"
+    networks:
+      - activities-network
+    depends_on:
+      - sqlserver
+  
+networks:
+  activities-network:
+    
+volumes:
+  sql_data:

@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace Persistence.Migrations
+namespace Identity.Web.Data.Migrations.IdentityServer.ApplicationDbContext
 {
     /// <inheritdoc />
-    public partial class FixRelation : Migration
+    public partial class InitialApplicationConfigurationDbMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

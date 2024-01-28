@@ -1,4 +1,5 @@
-﻿using Identity.Web;
+﻿using Duende.IdentityServer.EntityFramework.DbContexts;
+using Identity.Web;
 using Identity.Web.Data;
 using Identity.Web.Infrastructure.EventDispatcher;
 using Microsoft.EntityFrameworkCore;
@@ -23,12 +24,12 @@ try
 
     builder.Services.AddRazorPages();
 
-    var sqlLiteConnString = builder.Configuration.GetConnectionString("DefaultConnection");
-
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlite(sqlLiteConnString));
+        options.UseSqlServer(connectionString));
 
-    builder.ConfigureIdentityServer(sqlLiteConnString);
+    builder.ConfigureIdentityServer(connectionString);
 
     builder.Services.AddScoped<IEventSink, EventDispatcher>();
 
@@ -38,6 +39,20 @@ try
     });
 
     var app = builder.Build();
+    
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var applicationDbContext = services.GetRequiredService<ApplicationDbContext>();
+        var persistedGrantDbContext = services.GetRequiredService<PersistedGrantDbContext>();
+        var configurationDbContext = services.GetRequiredService<ConfigurationDbContext>();
+        
+        Log.Information("Applying database migrations...");
+        applicationDbContext.Database.Migrate();
+        persistedGrantDbContext.Database.Migrate();
+        configurationDbContext.Database.Migrate();
+        Log.Information("Database migrations applied successfully.");
+    }
 
     app.UseSerilogRequestLogging();
 

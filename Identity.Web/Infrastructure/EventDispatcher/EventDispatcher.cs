@@ -7,7 +7,7 @@ namespace Identity.Web.Infrastructure.EventDispatcher;
 
 public class EventDispatcher : IEventSink
 {
-    private readonly ConnectionFactory _factory = new() { HostName = "localhost" };
+    private readonly ConnectionFactory _factory = new() { HostName = "rabbitmq" };
 
     public void Send<T>(IEvent<T> @event)
     {
